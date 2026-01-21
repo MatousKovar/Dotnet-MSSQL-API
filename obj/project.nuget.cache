@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "dPa+HaQWP10=",
+  "success": true,
+  "projectFilePath": "/Users/matouskovar/Dev/dotnet_simple_api/dotnet_simple_api.csproj",
+  "expectedPackageFiles": [
+    "/Users/matouskovar/.nuget/packages/microsoft.aspnetcore.openapi/10.0.1/microsoft.aspnetcore.openapi.10.0.1.nupkg.sha512",
+    "/Users/matouskovar/.nuget/packages/microsoft.openapi/2.0.0/microsoft.openapi.2.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
