@@ -23,6 +23,6 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore Dotnet-MSSQL-API.sln
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build Dotnet-MSSQL-API.sln --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test Dotnet-MSSQL-API.sln --no-build --verbosity normal
