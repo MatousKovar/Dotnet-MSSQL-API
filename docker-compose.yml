@@ -13,7 +13,7 @@ services:
       # Host_Port : Container_Port
       - "1433:1433" 
     volumes:
-      # data stored when container is shut down
+      # data stored when container is shut down (iside docker root)
       - mssql_data:/var/opt/mssql
 
 volumes:
