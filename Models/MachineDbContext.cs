@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace dotnet_simple_api.Models;
+namespace SimpleAPI.Models;
 
 public partial class MachineDbContext : DbContext
 {

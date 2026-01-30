@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace dotnet_simple_api.Models;
+namespace SimpleAPI.Models;
 
 public partial class MachineType
 {
