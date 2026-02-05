@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SimpleAPI.Data;
+using SimpleAPI.Models;
 
 namespace SimpleAPI;
 
@@ -10,6 +13,14 @@ namespace SimpleAPI;
 [Route("api/[controller]")] // controller takes the name of class and removes Contoller from it - thi is accessible via https://<hostaddress>/api/Database
 public class DatabaseController : ControllerBase
 {
+    private readonly MachineDbContext _context;    
+
+    
+    public DatabaseController(MachineDbContext context)
+    {
+        _context = context;        
+    }
+
     // Passing correct output parameter instead of IActionResult automatically generates swagger docs
     [HttpGet("hello")] // /api/Database/hello
     public ActionResult<string> getWelcomeMessage()

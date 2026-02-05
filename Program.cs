@@ -15,6 +15,9 @@ public class Program
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")  // sets from connection string from config file. AddDbContext is handled by MachineDbContext constructor
             ?? throw new InvalidOperationException("Connection string"
             + "'DefaultConnection' not found.");
+
+
+        //dependency injection can easily swap for test database if needed
         builder.Services.AddDbContext<MachineDbContext>(options => options.UseSqlServer(connectionString));
 
         builder.Services.AddEndpointsApiExplorer();
@@ -22,7 +25,6 @@ public class Program
         builder.Services.AddSwaggerGen();        
 
         builder.Services.AddControllers(); // scans directory for classes with ending Controller
-
 
         var app = builder.Build();
 
