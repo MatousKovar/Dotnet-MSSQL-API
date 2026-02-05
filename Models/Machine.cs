@@ -18,6 +18,7 @@ public partial class Machine
 
     public DateOnly? PurchaseDate { get; set; }
 
+    // Foreign key for MachineType - can have one MachineType
     public virtual MachineType? MachineType { get; set; }
 
     public virtual ICollection<WorkLog> WorkLogs { get; set; } = new List<WorkLog>();
