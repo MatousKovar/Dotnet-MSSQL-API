@@ -29,28 +29,32 @@ public class DatabaseController : ControllerBase
     }
 
     // Get all machines with their types
-    // /api/Database/machines
     // ActionResult class is a wrapper for HTTP responses - contains code, data and so on
     // Can return IActionResult, but that hides response type for swagger docs
     // almost always better to return async, worker does not have to wait for DB response
+    // /api/Database/machines
     [HttpGet("machines")]
     public async Task<ActionResult<List<MachineDto>>> getMachines()
     {
-        var machines = await _context.Machines
+        //Include looks for related data based on foreign keys - like JOIN in SQL
+        //Can create cycles - that is what MachineDto is for
+        List<MachineDto> machines = await _context.Machines
         .Include(m => m.MachineType) // Still need to include to get the data
         .Select(m => new MachineDto
         {
-            // Left side is DTO, Right side is Database Entity
             Code = m.Code,
             Status = m.Status,
             Location = m.Location,
             
-            // FLATTENING: Grab the nested name and put it at the top level
-            MachineTypeName = m.MachineType.Name 
+            MachineTypeName = m.MachineType.Name ?? "Unknown"
         })
         .ToListAsync();
 
-        // Now 'machines' is a List<MachineDto>, which has no cycles!
+        if (machines == null || machines.Count == 0)
+        {
+            return NotFound("No machines found");
+        }
+
         return Ok(machines);
     }
 

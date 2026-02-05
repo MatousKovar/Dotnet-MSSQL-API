@@ -2,6 +2,7 @@ using SimpleAPI.Models;
 using SimpleAPI.Data;
 namespace SimpleAPI.DTOs;
 
+// DTO is used for returning data to client without showing whole database structured. Prevents cycles
 public class MachineDto
 {
     public string Code { get; set; } = null!;
