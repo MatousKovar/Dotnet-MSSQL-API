@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SimpleAPI.Data;
 using SimpleAPI.Models;
-
+using SimpleAPI.DTOs;
 namespace SimpleAPI;
 
 
@@ -34,14 +34,23 @@ public class DatabaseController : ControllerBase
     // Can return IActionResult, but that hides response type for swagger docs
     // almost always better to return async, worker does not have to wait for DB response
     [HttpGet("machines")]
-    public async Task<ActionResult<List<Machine>>> getMachines()
+    public async Task<ActionResult<List<MachineDto>>> getMachines()
     {
-        List<Machine>? machines = await _context.Machines.Include(m => m.MachineType).ToListAsync();
-
-        if (machines == null || machines.Count == 0)
+        var machines = await _context.Machines
+        .Include(m => m.MachineType) // Still need to include to get the data
+        .Select(m => new MachineDto
         {
-            return NotFound("No machines found");
-        }
+            // Left side is DTO, Right side is Database Entity
+            Code = m.Code,
+            Status = m.Status,
+            Location = m.Location,
+            
+            // FLATTENING: Grab the nested name and put it at the top level
+            MachineTypeName = m.MachineType.Name 
+        })
+        .ToListAsync();
+
+        // Now 'machines' is a List<MachineDto>, which has no cycles!
         return Ok(machines);
     }
 
