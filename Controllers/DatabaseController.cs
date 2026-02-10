@@ -53,17 +53,42 @@ public class DatabaseController : ControllerBase
     }
 
     
-    [HttpPost]
+    [HttpPost("workLog")]
     public async Task<ActionResult<int>> acceptSession(WorkLogDto workLog)
     {
         bool machineExists = await _context.Machines.AnyAsync(m => m.Id == workLog.MachineId);
 
-        if (!machineExists)
+
+        if (!await IdExists<Machine>(workLog.MachineId))
         {
             return BadRequest($"Machine ID {workLog.MachineId} does not exist.");
         }
 
-        return Ok($"Received work log for Machine ID: {workLog.MachineId}, Operator ID: {workLog.OperatorId}, Project ID: {workLog.ProjectId}, Start Time: {workLog.StartTime}, End Time: {workLog.EndTime}, Output Quantity: {workLog.OutputQuantity}, Notes: {workLog.Notes}");
+        if (!await IdExists<Operator>(workLog.OperatorId))
+        {
+            return BadRequest($"Operator ID {workLog.OperatorId} does not exist.");
+        }
+
+        if (!await IdExists<Project>(workLog.ProjectId))
+        {
+            return BadRequest($"Project ID {workLog.ProjectId} does not exist.");
+        }
+
+        var newLog = new WorkLog
+        {
+            MachineId = workLog.MachineId,
+            OperatorId = workLog.OperatorId,
+            ProjectId = workLog.ProjectId, // Assuming 0 is a valid default or handle as needed
+            StartTime = workLog.StartTime,
+            EndTime = workLog.EndTime,
+            OutputQuantity = workLog.OutputQuantity,
+            Notes = workLog.Notes
+        };
+
+        _context.WorkLogs.Add(newLog);
+        await _context.SaveChangesAsync();
+
+        return Ok($"New log ID: {newLog.Id}");
     }
 
 
@@ -79,10 +104,12 @@ public class DatabaseController : ControllerBase
     }
 
 
-    // Generic function for checking if IDs exist
-    private bool IdExists<T>(int id) where T : class
+    // Generic function for checking if IDs exist in table T 
+    private async Task<bool> IdExists<T>(int id) where T : class
     {
-        return _context.Set<T>().Any(e => EF.Property<int>(e, "Id") == id);
+        // Cannot call e.Id - need to use EF.Property to access the property by name, because T is not known at compile time
+        // EF.Property is a function which can tell compiler that there is property "Id" on object e 
+        return await _context.Set<T>().AnyAsync(e => EF.Property<int>(e, "Id") == id);
     }
 
 }
