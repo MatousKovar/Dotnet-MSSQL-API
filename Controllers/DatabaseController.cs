@@ -54,7 +54,7 @@ public class DatabaseController : ControllerBase
 
     
     [HttpPost("registerWorkLog")]
-    public async Task<ActionResult<int>> acceptSession(CreateWorkLogDto workLog)
+    public async Task<ActionResult<CreateWorkLogResponseDto>> acceptSession(CreateWorkLogDto workLog)
     {
         string? validationError = await ValidateWorkLogAsync(workLog);
         if (validationError != null)
@@ -78,9 +78,9 @@ public class DatabaseController : ControllerBase
 
         //Best practice to return Created code 201 with location of new resource and its ID, so that client can easily access it
         return CreatedAtAction(
-            nameof(GetLogById), 
-            new { id = newLog.Id },
-            new { id = newLog.Id });
+            nameof(GetLogById), // method to find inserted log
+            new { id = newLog.Id }, // URL parameters for GetLogById
+            new CreateWorkLogResponseDto { Id = newLog.Id }); // return object
     }
 
     [HttpGet("workLogs/{id}")]
