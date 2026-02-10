@@ -54,7 +54,7 @@ public class DatabaseController : ControllerBase
 
     
     [HttpPost("workLog")]
-    public async Task<ActionResult<int>> acceptSession(WorkLogDto workLog)
+    public async Task<ActionResult<int>> acceptSession(CreateWorkLogDto workLog)
     {
         bool machineExists = await _context.Machines.AnyAsync(m => m.Id == workLog.MachineId);
 
