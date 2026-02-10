@@ -53,25 +53,13 @@ public class DatabaseController : ControllerBase
     }
 
     
-    [HttpPost("workLog")]
+    [HttpPost("registerWorkLog")]
     public async Task<ActionResult<int>> acceptSession(CreateWorkLogDto workLog)
     {
-        bool machineExists = await _context.Machines.AnyAsync(m => m.Id == workLog.MachineId);
-
-
-        if (!await IdExists<Machine>(workLog.MachineId))
+        string? validationError = await ValidateWorkLogAsync(workLog);
+        if (validationError != null)
         {
-            return BadRequest($"Machine ID {workLog.MachineId} does not exist.");
-        }
-
-        if (!await IdExists<Operator>(workLog.OperatorId))
-        {
-            return BadRequest($"Operator ID {workLog.OperatorId} does not exist.");
-        }
-
-        if (!await IdExists<Project>(workLog.ProjectId))
-        {
-            return BadRequest($"Project ID {workLog.ProjectId} does not exist.");
+            return BadRequest(validationError);
         }
 
         var newLog = new WorkLog
@@ -88,9 +76,24 @@ public class DatabaseController : ControllerBase
         _context.WorkLogs.Add(newLog);
         await _context.SaveChangesAsync();
 
-        return Ok($"New log ID: {newLog.Id}");
+        //Best practice to return Created code 201 with location of new resource and its ID, so that client can easily access it
+        return CreatedAtAction(
+            nameof(GetLogById), 
+            new { id = newLog.Id },
+            new { id = newLog.Id });
     }
 
+    [HttpGet("workLogs/{id}")]
+    public async Task<ActionResult<WorkLog>> GetLogById(int id)
+    {
+        var log = await _context.WorkLogs.FindAsync(id);
+        if (log == null)
+        {
+            return NotFound($"Work log with ID {id} not found.");
+        }
+
+        return Ok(log);
+    }
 
     [HttpGet] // eg: /api/Database?id=5 
     public ActionResult<string> acceptIDQuery(int? id)
@@ -110,6 +113,37 @@ public class DatabaseController : ControllerBase
         // Cannot call e.Id - need to use EF.Property to access the property by name, because T is not known at compile time
         // EF.Property is a function which can tell compiler that there is property "Id" on object e 
         return await _context.Set<T>().AnyAsync(e => EF.Property<int>(e, "Id") == id);
+    }
+
+    // checks input, returns null if input is in order
+    private async Task<string?> ValidateWorkLogAsync(CreateWorkLogDto workLog)
+    {
+        if (!await IdExists<Machine>(workLog.MachineId))
+        {
+            return $"Machine ID {workLog.MachineId} does not exist.";
+        }
+
+        if (!await IdExists<Operator>(workLog.OperatorId))
+        {
+            return $"Operator ID {workLog.OperatorId} does not exist.";
+        }
+
+        if (!await IdExists<Project>(workLog.ProjectId))
+        {
+            return $"Project ID {workLog.ProjectId} does not exist.";
+        }
+
+        if (workLog.StartTime > DateTime.Now)
+        {
+            return "Start time cannot be in the future.";
+        }
+
+        if (workLog.EndTime.HasValue && workLog.EndTime > DateTime.Now)
+        {
+            return "End time cannot be in the future.";
+        }
+
+        return null;
     }
 
 }
