@@ -21,26 +21,20 @@ public class DatabaseController : ControllerBase
         _context = context;        
     }
 
-    // Passing correct output parameter instead of IActionResult automatically generates swagger docs
-    [HttpGet("hello")] // /api/Database/hello
-    public ActionResult<string> getWelcomeMessage()
-    {
-        return Ok($"Hello world");
-    }
-
+    // All endpoints should return ActionResult<T> - contains HTTP status codes and data
+    // Can return IActionResult, but that hides response type for swagger docs
     // Get all machines with their types
     // ActionResult class is a wrapper for HTTP responses - contains code, data and so on
-    // Can return IActionResult, but that hides response type for swagger docs
     // almost always better to return async, worker does not have to wait for DB response
     // /api/Database/machines
     [HttpGet("machines")]
     public async Task<ActionResult<List<MachineDto>>> getMachines()
     {
         //Include looks for related data based on foreign keys - like JOIN in SQL
-        //Can create cycles - that is what MachineDto is for
+        //Can create cycles - that is what MachineDto is for, it is essentially a simplified version of the Machine model that only contains the data we want to return, and does not include navigation properties that could cause cycles
         List<MachineDto> machines = await _context.Machines
-        .Include(m => m.MachineType) // Still need to include to get the data
-        .Select(m => new MachineDto
+            .Include(m => m.MachineType)
+            .Select(m => new MachineDto
         {
             Code = m.Code,
             Status = m.Status,
@@ -58,10 +52,18 @@ public class DatabaseController : ControllerBase
         return Ok(machines);
     }
 
-    [HttpGet("{id:int}")] // eg: /api/Database/5 
-    public ActionResult<string> acceptID(int id)
+    
+    [HttpPost]
+    public async Task<ActionResult<int>> acceptSession(WorkLogDto workLog)
     {
-        return Ok($"Requested ID: {id}");
+        bool machineExists = await _context.Machines.AnyAsync(m => m.Id == workLog.MachineId);
+
+        if (!machineExists)
+        {
+            return BadRequest($"Machine ID {workLog.MachineId} does not exist.");
+        }
+
+        return Ok($"Received work log for Machine ID: {workLog.MachineId}, Operator ID: {workLog.OperatorId}, Project ID: {workLog.ProjectId}, Start Time: {workLog.StartTime}, End Time: {workLog.EndTime}, Output Quantity: {workLog.OutputQuantity}, Notes: {workLog.Notes}");
     }
 
 
@@ -74,6 +76,13 @@ public class DatabaseController : ControllerBase
             return BadRequest("ID parameter required");
         }
         return Ok($"Requested ID: {id}");
+    }
+
+
+    // Generic function for checking if IDs exist
+    private bool IdExists<T>(int id) where T : class
+    {
+        return _context.Set<T>().Any(e => EF.Property<int>(e, "Id") == id);
     }
 
 }

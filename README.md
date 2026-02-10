@@ -26,3 +26,9 @@
   - context-dir automaticky nastaví kam se uloží DbContext class
 - Pro ukladani citlivych informaci mimo zdroják: https://learn.microsoft.com/en-us/ef/core/dbcontext-configuration/
 - Idealne na produkci budu mit appsettings.json DefaultConnection jako enviromantal secret na gitu, nebudu to mit v plaintextu a nastavim, ze zmeny v appsettings.json se nepushujou, aby mi to vyvojari neprepisovali, pro tohle lokalni repo je to overkill
+
+
+## Implementace
+### 1) Logovani
+- Co se tyce navrhu databaze tak v pripade tabulky work_logs je vedena tak, ze kazdy    zaznam ma zacatek a konec. Druha moznost, ktera by byla pro implementaci jednodussi by byla ukladat vzdy zaznam s timestampem a druhem - start/end. Nasledna prace by byla ale zase narocnejsi na frontendu
+- V nasem pripade funguje tak - ze pri insertu noveho logu funkce vrati ID v databazi a pri ukonceni prace se na stejne ID doplni EndTime 
