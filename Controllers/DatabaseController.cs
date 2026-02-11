@@ -33,6 +33,7 @@ public class DatabaseController : ControllerBase
         //Include looks for related data based on foreign keys - like JOIN in SQL
         //Can create cycles - that is what MachineDto is for, it is essentially a simplified version of the Machine model that only contains the data we want to return, and does not include navigation properties that could cause cycles
         List<MachineDto> machines = await _context.Machines
+            .OrderBy(m => m.Code)
             .Include(m => m.MachineType)
             .Select(m => new MachineDto
         {
@@ -84,7 +85,7 @@ public class DatabaseController : ControllerBase
     }
 
     [HttpGet("workLogs/{id}")]
-    public async Task<ActionResult<WorkLogDto>> GetLogById([FromQuery] int id)
+    public async Task<ActionResult<WorkLogDto>> GetLogById([FromRoute] int id)
     {
         var logDto = await _context.WorkLogs
         .Where(log => log.Id == id)
@@ -193,6 +194,25 @@ public class DatabaseController : ControllerBase
                ProjectName = log.Project.Name
            }).ToListAsync();
         return Ok(logs);
+    }
+
+    [HttpGet("operators")]
+    public async Task<ActionResult<List<OperatorDto>>>GetOperators()
+    {
+        var dto = await _context.Operators
+            .OrderBy(op => op.LastName)
+            .ThenBy(op => op.FirstName)
+            .Select(op => new OperatorDto{
+                Id = op.Id,
+                FirstName = op.FirstName,
+                LastName = op.LastName,
+                BadgeNumber = op.BadgeNumber,
+                Email = op.Email,
+                IsActive = op.IsActive
+                })
+            .ToListAsync();
+
+        return Ok(dto);
     }
 
 

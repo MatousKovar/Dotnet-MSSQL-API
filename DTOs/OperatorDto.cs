@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+namespace SimpleAPI;
+using SimpleAPI.Models;
 
-namespace SimpleAPI.Models;
-
-public partial class Operator
+public class OperatorDto
 {
     public int Id { get; set; }
 
@@ -17,6 +15,5 @@ public partial class Operator
 
     public bool? IsActive { get; set; }
 
-    public virtual ICollection<WorkLog> WorkLogs { get; set; } = new List<WorkLog>();
 
 }
