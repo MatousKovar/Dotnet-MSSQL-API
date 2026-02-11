@@ -261,22 +261,16 @@ public class DatabaseController : ControllerBase
         return Ok(workLogs);
     }
 
-    private string ValidateSkipAndTake(int skip, int take)
+    private string? ValidateSkipAndTake(int skip, int take)
     {
         if(skip < 0)
-        {
             return "Skip parameter cannot be negative number.";
-        }
 
         if (take <= 0 )
-        {
             return "Take parameter cannot be negative number or zero.";
-        }
 
         if(take > 1000)
-        {
             return "Take parameter can be at most 1000.";
-        }
 
         return null;
     }
@@ -293,29 +287,19 @@ public class DatabaseController : ControllerBase
     private async Task<string?> ValidateWorkLogAsync(CreateWorkLogDto workLog)
     {
         if (!await IdExists<Machine>(workLog.MachineId))
-        {
             return $"Machine ID {workLog.MachineId} does not exist.";
-        }
 
         if (!await IdExists<Operator>(workLog.OperatorId))
-        {
             return $"Operator ID {workLog.OperatorId} does not exist.";
-        }
 
         if (!await IdExists<Project>(workLog.ProjectId))
-        {
             return $"Project ID {workLog.ProjectId} does not exist.";
-        }
 
         if (workLog.StartTime > DateTime.Now)
-        {
             return "Start time cannot be in the future.";
-        }
 
         if (workLog.EndTime.HasValue && workLog.EndTime > DateTime.Now)
-        {
             return "End time cannot be in the future.";
-        }
 
         return null;
     }
