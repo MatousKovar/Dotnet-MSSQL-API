@@ -158,19 +158,10 @@ public class DatabaseController : ControllerBase
     [HttpGet("getRecentWorklogs")]
     public async Task<ActionResult<List<WorkLogDto>>> GetRecentWorkLogs([FromQuery] int take = 50, [FromQuery] int skip = 0)
     {
-        if(skip < 0)
+        var skip_take = ValidateSkipAndTake(skip, take);
+        if(skip_take != null)
         {
-            return BadRequest("Skip parameter cannot be negative number.");
-        }
-
-        if (take <= 0 )
-        {
-            return BadRequest("Take parameter cannot be negative number or zero.");
-        }
-
-        if(take > 1000)
-        {
-            return BadRequest("Take parameter can be at most 1000.");
+            return BadRequest(skip_take);
         }
 
         var logs = await _context.WorkLogs
@@ -235,6 +226,10 @@ public class DatabaseController : ControllerBase
     [HttpGet("workLogsForProject/{projectId}")]
     public async Task<ActionResult<List<WorkLogDto>>>GetWorkLogsForProject(int projectId, [FromQuery] int take = 50, [FromQuery] int skip = 0)
     {
+        var skip_take = ValidateSkipAndTake(skip,take);
+        if(skip_take != null)
+            return BadRequest(skip_take);
+
         var workLogs = await _context.WorkLogs
         .Where(log => log.ProjectId == projectId)
         .OrderByDescending(log => log.StartTime)
@@ -266,6 +261,25 @@ public class DatabaseController : ControllerBase
         return Ok(workLogs);
     }
 
+    private string ValidateSkipAndTake(int skip, int take)
+    {
+        if(skip < 0)
+        {
+            return "Skip parameter cannot be negative number.";
+        }
+
+        if (take <= 0 )
+        {
+            return "Take parameter cannot be negative number or zero.";
+        }
+
+        if(take > 1000)
+        {
+            return "Take parameter can be at most 1000.";
+        }
+
+        return null;
+    }
 
     // Generic function for checking if IDs exist in table T 
     private async Task<bool> IdExists<T>(int id) where T : class
