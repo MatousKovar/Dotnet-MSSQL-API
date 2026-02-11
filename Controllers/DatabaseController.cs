@@ -84,15 +84,33 @@ public class DatabaseController : ControllerBase
     }
 
     [HttpGet("workLogs/{id}")]
-    public async Task<ActionResult<WorkLog>> GetLogById(int id)
+    public async Task<ActionResult<WorkLogDto>> GetLogById([FromQuery] int id)
     {
-        var log = await _context.WorkLogs.FindAsync(id);
-        if (log == null)
+        var logDto = await _context.WorkLogs
+        .Where(log => log.Id == id)
+        .Select(log=> new WorkLogDto
+        {
+            Id = log.Id,
+            MachineId = log.MachineId,
+            OperatorId = log.OperatorId,
+
+            StartTime = log.StartTime,
+            EndTime = log.EndTime,
+            OutputQuantity = log.OutputQuantity,
+            Notes = log.Notes,
+        
+            MachineCode = log.Machine.Code,
+            OperatorFirstname = log.Operator.FirstName,
+            OperatorLastname = log.Operator.LastName,
+            ProjectName = log.Project.Name
+        }).FirstOrDefaultAsync();
+
+        if (logDto == null)
         {
             return NotFound($"Work log with ID {id} not found.");
         }
 
-        return Ok(log);
+        return Ok(logDto);
     }
 
 
