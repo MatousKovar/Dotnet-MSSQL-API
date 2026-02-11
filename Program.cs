@@ -1,6 +1,7 @@
 using System.Data;
 using SimpleAPI.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection; 
 
 
 namespace SimpleAPI;
@@ -22,7 +23,16 @@ public class Program
 
         builder.Services.AddEndpointsApiExplorer();
 
-        builder.Services.AddSwaggerGen();        
+        // Pass path to XML file - for swagger to see comments
+        builder.Services.AddSwaggerGen(options =>
+            {
+                //xml file named same as project
+                //located in bin folder
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+
+                options.IncludeXmlComments(xmlPath);
+            });     
 
         builder.Services.AddControllers(); // scans directory for classes with ending Controller
 

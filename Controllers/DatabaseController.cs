@@ -115,10 +115,33 @@ public class DatabaseController : ControllerBase
         return Ok(true);
     }
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<WorkLogDto>>> GetWorkLogs()
+
+
+    /// <summary>
+    /// Retrieves a list of work logs, ordered by Start Time (newest first). Can return maximum 1000 logs per request.
+    /// </summary>
+    [HttpGet("getRecentWorklogs")]
+    public async Task<ActionResult<List<WorkLogDto>>> GetRecentWorkLogs([FromQuery] int take = 50, [FromQuery] int skip = 0)
     {
+        if(skip < 0)
+        {
+            return BadRequest("Skip parameter cannot be negative number.");
+        }
+
+        if (take <= 0 )
+        {
+            return BadRequest("Take parameter cannot be negative number or zero.");
+        }
+
+        if(take > 1000)
+        {
+            return BadRequest("Take parameter can be at most 1000.");
+        }
+
         var logs = await _context.WorkLogs
+           .OrderByDescending(log => log.StartTime)
+           .Skip(skip)
+           .Take(take)
            .Select(log => new WorkLogDto
            {
                Id = log.Id,
@@ -137,6 +160,7 @@ public class DatabaseController : ControllerBase
            }).ToListAsync();
         return Ok(logs);
     }
+
 
     // Generic function for checking if IDs exist in table T 
     private async Task<bool> IdExists<T>(int id) where T : class
