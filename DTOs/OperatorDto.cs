@@ -1,4 +1,4 @@
-namespace SimpleAPI;
+namespace SimpleAPI.DTOs;
 using SimpleAPI.Models;
 
 public class OperatorDto

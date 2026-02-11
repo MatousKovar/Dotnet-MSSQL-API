@@ -215,6 +215,57 @@ public class DatabaseController : ControllerBase
         return Ok(dto);
     }
 
+    [HttpGet("projects")]
+    public async Task<ActionResult<List<ProjectDto>>>GetProjects()
+    {
+        var dto = await _context.Projects
+            .OrderBy(proj => proj.Name)
+            .Select(proj => new ProjectDto{
+                Id = proj.Id,
+                Name = proj.Name,
+                ClientName = proj.ClientName,
+                Deadline = proj.Deadline,
+                Status = proj.Status,
+                })
+            .ToListAsync();
+
+        return Ok(dto);
+    }
+
+    [HttpGet("workLogsForProject/{projectId}")]
+    public async Task<ActionResult<List<WorkLogDto>>>GetWorkLogsForProject(int projectId, [FromQuery] int take = 50, [FromQuery] int skip = 0)
+    {
+        var workLogs = await _context.WorkLogs
+        .Where(log => log.ProjectId == projectId)
+        .OrderByDescending(log => log.StartTime)
+        .Take(take)
+        .Skip(skip)
+        .Select(log => new WorkLogDto
+        {
+            Id = log.Id,
+            MachineId = log.MachineId,
+            OperatorId = log.OperatorId,
+            
+            StartTime = log.StartTime,
+            EndTime = log.EndTime,
+            OutputQuantity = log.OutputQuantity,
+            Notes = log.Notes,
+
+            MachineCode = log.Machine.Code,
+            OperatorFirstname = log.Operator.FirstName,
+            OperatorLastname = log.Operator.LastName,
+            ProjectName = log.Project.Name
+        })
+        .ToListAsync();
+
+        if(workLogs.Count == 0)
+        {
+            return NotFound($"No work logs for project id {projectId}");
+        }
+
+        return Ok(workLogs);
+    }
+
 
     // Generic function for checking if IDs exist in table T 
     private async Task<bool> IdExists<T>(int id) where T : class
