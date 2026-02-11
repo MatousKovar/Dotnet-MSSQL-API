@@ -18,4 +18,6 @@ public class WorkLogDto
     public DateTime? EndTime { get; set; }
     public int? OutputQuantity { get; set; }
     public string? Notes { get; set; }
+
+
 }

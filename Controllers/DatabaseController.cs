@@ -80,7 +80,7 @@ public class DatabaseController : ControllerBase
         return CreatedAtAction(
             nameof(GetLogById), // method to find inserted log
             new { id = newLog.Id }, // URL parameters for GetLogById
-            new CreateWorkLogResponseDto { Id = newLog.Id }); // return object
+            new CreateWorkLogResponseDto{ Id = newLog.Id }); // return object
     }
 
     [HttpGet("workLogs/{id}")]
@@ -88,7 +88,7 @@ public class DatabaseController : ControllerBase
     {
         var logDto = await _context.WorkLogs
         .Where(log => log.Id == id)
-        .Select(log=> new WorkLogDto
+        .Select(log => new WorkLogDto
         {
             Id = log.Id,
             MachineId = log.MachineId,
@@ -127,10 +127,26 @@ public class DatabaseController : ControllerBase
         }
 
         workLog.EndTime = DateTime.UtcNow; // timezone running on server
-
         await _context.SaveChangesAsync();
 
-        return Ok(true);
+        var resultDto = new WorkLogDto 
+        {
+            Id = workLog.Id,
+            MachineId = workLog.MachineId,
+            OperatorId = workLog.OperatorId,
+
+            StartTime = workLog.StartTime,
+            EndTime = workLog.EndTime,
+            OutputQuantity = workLog.OutputQuantity,
+            Notes = workLog.Notes,
+            
+            MachineCode = workLog.Machine.Code,
+            OperatorFirstname = workLog.Operator.FirstName,
+            OperatorLastname = workLog.Operator.LastName,
+            ProjectName = workLog.Project.Name
+        };
+
+        return Ok(resultDto);
     }
 
 

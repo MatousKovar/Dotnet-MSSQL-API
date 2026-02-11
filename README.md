@@ -32,3 +32,7 @@
 ### 1) Logovani
 - Co se tyce navrhu databaze tak v pripade tabulky work_logs je vedena tak, ze kazdy    zaznam ma zacatek a konec. Druha moznost, ktera by byla pro implementaci jednodussi by byla ukladat vzdy zaznam s timestampem a druhem - start/end. Nasledna prace by byla ale zase narocnejsi na frontendu
 - V nasem pripade funguje tak - ze pri insertu noveho logu funkce vrati ID v databazi a pri ukonceni prace se na stejne ID doplni EndTime 
+
+### 2) Dto objekty
+- Pro navrat dat casto nechci vracet presne strukturu z DB, tak delam DTO objekty. 
+- U nekterych DTO objektu je potreba psat delsi blok kodu na vytvoreni objektu, to by slo nahradit konstruktorem, nicmene potom se zase vsude musi psat Include, pokud v DTO chci dereferenovat nejake prvky, takze bud kopiruju ten konstruktor, nebo .Include ke vsem dotazum. Nejsem si jisty co je "best practice"
