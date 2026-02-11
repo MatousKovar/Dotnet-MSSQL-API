@@ -53,8 +53,8 @@ public class DatabaseController : ControllerBase
     }
 
     
-    [HttpPost("registerWorkLog")]
-    public async Task<ActionResult<CreateWorkLogResponseDto>> acceptSession(CreateWorkLogDto workLog)
+    [HttpPost("registerWorkSession")]
+    public async Task<ActionResult<CreateWorkLogResponseDto>> RegisterWorkSession(CreateWorkLogDto workLog)
     {
         string? validationError = await ValidateWorkLogAsync(workLog);
         if (validationError != null)
@@ -95,17 +95,48 @@ public class DatabaseController : ControllerBase
         return Ok(log);
     }
 
-    [HttpGet] // eg: /api/Database?id=5 
-    public ActionResult<string> acceptIDQuery(int? id)
-    {
 
-        if (id == null)
+    // function sets end time of session when receives HttpPut request with valid work_log_id
+    [HttpPut("endWorkSession")]
+    public async Task<ActionResult<WorkLogDto>> EndWorkSession(int workLogId)
+    {
+       
+        WorkLog? workLog = await _context.WorkLogs.FindAsync(workLogId);
+
+        if(workLog == null)
         {
-            return BadRequest("ID parameter required");
+            return NotFound($"Work session with id: {workLogId} not found.");
         }
-        return Ok($"Requested ID: {id}");
+
+        workLog.EndTime = DateTime.UtcNow; // timezone running on server
+
+        await _context.SaveChangesAsync();
+
+        return Ok(true);
     }
 
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<WorkLogDto>>> GetWorkLogs()
+    {
+        var logs = await _context.WorkLogs
+           .Select(log => new WorkLogDto
+           {
+               Id = log.Id,
+               MachineId = log.MachineId,
+               OperatorId = log.OperatorId,
+
+               StartTime = log.StartTime,
+               EndTime = log.EndTime,
+               OutputQuantity = log.OutputQuantity,
+               Notes = log.Notes,
+        
+               MachineCode = log.Machine.Code,
+               OperatorFirstname = log.Operator.FirstName,
+               OperatorLastname = log.Operator.LastName,
+               ProjectName = log.Project.Name
+           }).ToListAsync();
+        return Ok(logs);
+    }
 
     // Generic function for checking if IDs exist in table T 
     private async Task<bool> IdExists<T>(int id) where T : class
