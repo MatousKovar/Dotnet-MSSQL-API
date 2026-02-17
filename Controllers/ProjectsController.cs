@@ -30,7 +30,7 @@ public class ProjectsController(MachineDbContext context) : ControllerBase
     }
     
     
-    [HttpGet("workLogsForProject/{projectId}")]
+    [HttpGet("work-logs-for-project/{projectId}")]
     public async Task<ActionResult<List<WorkLogDto>>>GetWorkLogsForProject(int projectId, [FromQuery] int take = 50, [FromQuery] int skip = 0)
     {
         var skipTake = Helper.ValidateSkipAndTake(skip,take);

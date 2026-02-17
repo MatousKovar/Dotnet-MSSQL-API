@@ -10,7 +10,7 @@ namespace SimpleAPI.Controllers;
 [Route("api/[controller]")]
 public class WorkLogsController(MachineDbContext context) : ControllerBase
 {
-    [HttpPost("registerWorkSession")]
+    [HttpPost("register-work-session")]
     public async Task<ActionResult<CreateWorkLogResponseDto>> RegisterWorkSession(CreateWorkLogDto workLog)
     {
         string? validationError = await ValidateWorkLogAsync(workLog);
@@ -41,7 +41,7 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
     }
 
     
-    [HttpGet("workLogs/{id}")]
+    [HttpGet("work-logs/{id}")]
     public async Task<ActionResult<WorkLogDto>> GetLogById([FromRoute] int id)
     {
         var logDto = await context.WorkLogs
@@ -73,7 +73,7 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
 
 
     // function sets end time of session when receives HttpPut request with valid work_log_id
-    [HttpPut("endWorkSession")]
+    [HttpPut("end-work-session")]
     public async Task<ActionResult<WorkLogDto>> EndWorkSession(int workLogId)
     {
        
@@ -110,7 +110,7 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
     /// <summary>
     /// Retrieves a list of work logs, ordered by Start Time (newest first). Can return maximum 1000 logs per request.
     /// </summary>
-    [HttpGet("getRecentWorklogs")]
+    [HttpGet("get-recent-work-logs")]
     public async Task<ActionResult<List<WorkLogDto>>> GetRecentWorkLogs([FromQuery] int take = 50, [FromQuery] int skip = 0)
     {
         var skipTake = Helper.ValidateSkipAndTake(skip, take);
