@@ -1,12 +1,30 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SimpleAPI.Data;
-using SimpleAPI.Models;
 using SimpleAPI.DTOs;
-using SimpleAPI.Helpers;
 namespace SimpleAPI.Controllers;
 
-public class OperatorsController
+
+[ApiController]
+[Route("api/[controller]")]
+public class OperatorsController(MachineDbContext context) : ControllerBase
 {
-    
+    [HttpGet("operators")]
+    public async Task<ActionResult<List<OperatorDto>>>GetOperators()
+    {
+        var dto = await context.Operators
+            .OrderBy(op => op.LastName)
+            .ThenBy(op => op.FirstName)
+            .Select(op => new OperatorDto{
+                Id = op.Id,
+                FirstName = op.FirstName,
+                LastName = op.LastName,
+                BadgeNumber = op.BadgeNumber,
+                Email = op.Email,
+                IsActive = op.IsActive
+            })
+            .ToListAsync();
+
+        return Ok(dto);
+    }
 }

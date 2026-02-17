@@ -10,10 +10,6 @@ namespace SimpleAPI.Controllers;
 [Route("api/[controller]")]
 public class WorkLogsController(MachineDbContext context) : ControllerBase
 {
-    private readonly MachineDbContext _dbcontext = context;
-    
-    
-    
     [HttpPost("registerWorkSession")]
     public async Task<ActionResult<CreateWorkLogResponseDto>> RegisterWorkSession(CreateWorkLogDto workLog)
     {
@@ -34,8 +30,8 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
             Notes = workLog.Notes
         };
 
-        _dbcontext.WorkLogs.Add(newLog);
-        await _dbcontext.SaveChangesAsync();
+        context.WorkLogs.Add(newLog);
+        await context.SaveChangesAsync();
 
         //Best practice to return Created code 201 with location of new resource and its ID, so that client can easily access it
         return CreatedAtAction(
@@ -48,7 +44,7 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
     [HttpGet("workLogs/{id}")]
     public async Task<ActionResult<WorkLogDto>> GetLogById([FromRoute] int id)
     {
-        var logDto = await _dbcontext.WorkLogs
+        var logDto = await context.WorkLogs
         .Where(log => log.Id == id)
         .Select(log => new WorkLogDto
         {
@@ -81,7 +77,7 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
     public async Task<ActionResult<WorkLogDto>> EndWorkSession(int workLogId)
     {
        
-        WorkLog? workLog = await _dbcontext.WorkLogs.FindAsync(workLogId);
+        WorkLog? workLog = await context.WorkLogs.FindAsync(workLogId);
 
         if(workLog == null)
         {
@@ -89,7 +85,7 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
         }
 
         workLog.EndTime = DateTime.UtcNow; // timezone running on server
-        await _dbcontext.SaveChangesAsync();
+        await context.SaveChangesAsync();
 
         var resultDto = new WorkLogDto 
         {
@@ -123,7 +119,7 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
             return BadRequest(skipTake);
         }
 
-        var logs = await _dbcontext.WorkLogs
+        var logs = await context.WorkLogs
             .OrderByDescending(log => log.StartTime)
             .Skip(skip)
             .Take(take)
@@ -173,7 +169,7 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
     {
         // Cannot call e.Id - need to use EF.Property to access the property by name, because T is not known at compile time
         // EF.Property is a function which can tell compiler that there is property "Id" on object e 
-        return await _dbcontext.Set<T>().AnyAsync(e => EF.Property<int>(e, "Id") == id);
+        return await context.Set<T>().AnyAsync(e => EF.Property<int>(e, "Id") == id);
     }
     
 }

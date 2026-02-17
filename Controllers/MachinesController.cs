@@ -6,10 +6,9 @@ using SimpleAPI.DTOs;
 namespace SimpleAPI.Controllers;
 
 [ApiController]
+[Route("api/[controller]")]
 public class MachinesController(MachineDbContext context) : ControllerBase
 {
-    private readonly MachineDbContext _dbcontext = context;
-    
     // All endpoints should return ActionResult<T> - contains HTTP status codes and data
     // Can return IActionResult, but that hides response type for swagger docs
     // Get all machines with their types
@@ -21,7 +20,7 @@ public class MachinesController(MachineDbContext context) : ControllerBase
     {
         //Include looks for related data based on foreign keys - like JOIN in SQL
         //Can create cycles - that is what MachineDto is for, it is essentially a simplified version of the Machine model that only contains the data we want to return, and does not include navigation properties that could cause cycles
-        List<MachineDto> machines = await _dbcontext.Machines
+        List<MachineDto> machines = await context.Machines
             .OrderBy(m => m.Code)
             .Include(m => m.MachineType)
             .Select(m => new MachineDto
