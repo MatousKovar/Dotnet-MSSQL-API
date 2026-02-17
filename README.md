@@ -10,9 +10,11 @@
 
 - Bezi v nem MSSQL server 2025
 - Užitečné příkazy
-  - `docker up -d` - spustí docker
+  - `docker-compose up -d` - spustí docker
   - `docker ps` - bezici containery
   - `docker exec -it simple_api_database_mock_container bash` - pro přístup do shellu databáze
+- Db běží v containeru na portu 1433
+- pro připojení použije user: sa, pass: Dochazka123
 ---
 ## Databáze
 
