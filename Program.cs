@@ -1,4 +1,3 @@
-using System.Data;
 using SimpleAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection; 
@@ -26,7 +25,7 @@ public class Program
         // Pass path to XML file - for swagger to see comments
         builder.Services.AddSwaggerGen(options =>
             {
-                //xml file named same as project
+                //XML file named same as project
                 //located in bin folder
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
