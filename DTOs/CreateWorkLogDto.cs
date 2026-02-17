@@ -10,10 +10,6 @@ public class CreateWorkLogDto
 
     public int ProjectId { get; set; }
 
-    public DateTime StartTime { get; set; }
-
-    public DateTime? EndTime { get; set; }
-
     public int? OutputQuantity { get; set; }
 
     public string? Notes { get; set; }

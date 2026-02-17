@@ -29,7 +29,7 @@
   - context-dir automaticky nastaví kam se uloží DbContext class
 - Pro ukladani citlivych informaci mimo zdroják: https://learn.microsoft.com/en-us/ef/core/dbcontext-configuration/
 - Idealne na produkci budu mit appsettings.json DefaultConnection jako enviromantal secret na gitu, nebudu to mit v plaintextu a nastavim, ze zmeny v appsettings.json se nepushujou, aby mi to vyvojari neprepisovali, pro tohle lokalni repo je to overkill
-
+- Date time uložen jako [datetime2](https://learn.microsoft.com/en-us/sql/t-sql/data-types/datetime2-transact-sql?view=sql-server-ver17)
 
 
 
@@ -46,3 +46,6 @@
 - Vetsinou budou vracet tridu ActionResult<T> - reprezentuje nejakej Http response
 - Mozno vratit IActionResult - ale potom uz swagger automaticky nevi datovej typ co se vraci
 - Temer vsechny endpointy by mely bezet Async - at server neceka na odpoved od DB
+### 4) Čas
+- Čas je nastavován vždy serverem - při přijetí register-session, nebo end-session
+- Čas je ukládán pomocí `DateTime.UtcNow`

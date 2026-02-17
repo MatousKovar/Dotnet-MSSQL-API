@@ -24,9 +24,9 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
             MachineId = workLog.MachineId,
             OperatorId = workLog.OperatorId,
             ProjectId = workLog.ProjectId, // Assuming 0 is a valid default or handle as needed
-            StartTime = workLog.StartTime,
-            EndTime = workLog.EndTime,
             OutputQuantity = workLog.OutputQuantity,
+            StartTime = DateTime.UtcNow, 
+            EndTime = null,
             Notes = workLog.Notes
         };
 
@@ -73,6 +73,10 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
 
 
     // function sets end time of session when receives HttpPut request with valid work_log_id
+    /// <summary>
+    /// Sets end time to work log with given ID. Time is set as time when HttpPut was received by server
+    /// </summary>
+    // /api/WorkLogs/end-work-session
     [HttpPut("end-work-session")]
     public async Task<ActionResult<WorkLogDto>> EndWorkSession(int workLogId)
     {
@@ -84,7 +88,7 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
             return NotFound($"Work session with id: {workLogId} not found.");
         }
 
-        workLog.EndTime = DateTime.UtcNow; // timezone running on server
+        workLog.EndTime = DateTime.UtcNow; 
         await context.SaveChangesAsync();
 
         var resultDto = new WorkLogDto 
@@ -154,12 +158,6 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
 
         if (!await IdExists<Project>(workLog.ProjectId))
             return $"Project ID {workLog.ProjectId} does not exist.";
-
-        if (workLog.StartTime > DateTime.Now)
-            return "Start time cannot be in the future.";
-
-        if (workLog.EndTime.HasValue && workLog.EndTime > DateTime.Now)
-            return "End time cannot be in the future.";
 
         return null;
     }
