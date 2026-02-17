@@ -31,6 +31,8 @@
 - Idealne na produkci budu mit appsettings.json DefaultConnection jako enviromantal secret na gitu, nebudu to mit v plaintextu a nastavim, ze zmeny v appsettings.json se nepushujou, aby mi to vyvojari neprepisovali, pro tohle lokalni repo je to overkill
 
 
+
+
 ## Implementace
 ### 1) Logovani
 - Co se tyce navrhu databaze tak v pripade tabulky work_logs je vedena tak, ze kazdy    zaznam ma zacatek a konec. Druha moznost, ktera by byla pro implementaci jednodussi by byla ukladat vzdy zaznam s timestampem a druhem - start/end. Nasledna prace by byla ale zase narocnejsi na frontendu
@@ -39,3 +41,8 @@
 ### 2) Dto objekty
 - Pro navrat dat casto nechci vracet presne strukturu z DB, tak delam DTO objekty. 
 - U nekterych DTO objektu je potreba psat delsi blok kodu na vytvoreni objektu, to by slo nahradit konstruktorem, nicmene potom se zase vsude musi psat Include, pokud v DTO chci dereferenovat nejake prvky, takze bud kopiruju ten konstruktor, nebo .Include ke vsem dotazum. Nejsem si jisty co je "best practice"
+
+### 3) Endpointy 
+- Vetsinou budou vracet tridu ActionResult<T> - reprezentuje nejakej Http response
+- Mozno vratit IActionResult - ale potom uz swagger automaticky nevi datovej typ co se vraci
+- Temer vsechny endpointy by mely bezet Async - at server neceka na odpoved od DB

@@ -9,7 +9,8 @@ namespace SimpleAPI.Controllers;
 [Route("api/[controller]")]
 public class OperatorsController(MachineDbContext context) : ControllerBase
 {
-    [HttpGet("operators")]
+    // /api/Operators
+    [HttpGet]
     public async Task<ActionResult<List<OperatorDto>>>GetOperators()
     {
         var dto = await context.Operators

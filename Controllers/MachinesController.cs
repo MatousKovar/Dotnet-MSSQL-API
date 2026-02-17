@@ -9,17 +9,13 @@ namespace SimpleAPI.Controllers;
 [Route("api/[controller]")]
 public class MachinesController(MachineDbContext context) : ControllerBase
 {
-    // All endpoints should return ActionResult<T> - contains HTTP status codes and data
-    // Can return IActionResult, but that hides response type for swagger docs
-    // Get all machines with their types
-    // ActionResult class is a wrapper for HTTP responses - contains code, data and so on
-    // almost always better to return async, worker does not have to wait for DB response
-    // /api/Database/machines
-    [HttpGet("machines")]
+    // ActionResult<T> - contains HTTP status codes and data
+    // api/Machines
+    [HttpGet]
     public async Task<ActionResult<List<MachineDto>>> GetMachines()
     {
-        //Include looks for related data based on foreign keys - like JOIN in SQL
-        //Can create cycles - that is what MachineDto is for, it is essentially a simplified version of the Machine model that only contains the data we want to return, and does not include navigation properties that could cause cycles
+        // Include looks for related data based on foreign keys - like JOIN in SQL
+        // MachineDto is for, it is essentially a simplified version of the Machine model that only contains the data we want to return
         List<MachineDto> machines = await context.Machines
             .OrderBy(m => m.Code)
             .Include(m => m.MachineType)

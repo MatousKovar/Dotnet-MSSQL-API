@@ -11,7 +11,8 @@ namespace SimpleAPI.Controllers;
 [Route("api/[controller]")]
 public class ProjectsController(MachineDbContext context) : ControllerBase
 {
-    [HttpGet("projects")]
+    // /api/Projects
+    [HttpGet]
     public async Task<ActionResult<List<ProjectDto>>>GetProjects()
     {
         var dto = await context.Projects
