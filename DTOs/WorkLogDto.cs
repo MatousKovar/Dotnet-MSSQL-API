@@ -14,7 +14,13 @@ public class WorkLogDto
     public string OperatorLastname { get; set; } = string.Empty;
     public string ProjectName { get; set; } = "Unknown";
 
+    /// <summary>
+    /// DATETIME2 datatype and Utc timezone
+    /// </summary>
     public DateTime StartTime { get; set; }
+    /// <summary>
+    /// DATETIME2 datatype and Utc timezone
+    /// </summary>
     public DateTime? EndTime { get; set; }
     public int? OutputQuantity { get; set; }
     public string? Notes { get; set; }
