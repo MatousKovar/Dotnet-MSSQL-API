@@ -3,11 +3,16 @@ using Microsoft.EntityFrameworkCore;
 using SimpleAPI.Data;
 using SimpleAPI.Models;
 using SimpleAPI.DTOs;
+using SimpleAPI.Helpers;
 namespace SimpleAPI.Controllers;
 
+[ApiController]
+[Route("api/[controller]")]
 public class WorkLogsController(MachineDbContext context) : ControllerBase
 {
     private readonly MachineDbContext _dbcontext = context;
+    
+    
     
     [HttpPost("registerWorkSession")]
     public async Task<ActionResult<CreateWorkLogResponseDto>> RegisterWorkSession(CreateWorkLogDto workLog)
@@ -39,6 +44,7 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
             new CreateWorkLogResponseDto{ Id = newLog.Id }); // return object
     }
 
+    
     [HttpGet("workLogs/{id}")]
     public async Task<ActionResult<WorkLogDto>> GetLogById([FromRoute] int id)
     {
@@ -83,7 +89,7 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
         }
 
         workLog.EndTime = DateTime.UtcNow; // timezone running on server
-        await context.SaveChangesAsync();
+        await _dbcontext.SaveChangesAsync();
 
         var resultDto = new WorkLogDto 
         {
@@ -111,13 +117,13 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
     [HttpGet("getRecentWorklogs")]
     public async Task<ActionResult<List<WorkLogDto>>> GetRecentWorkLogs([FromQuery] int take = 50, [FromQuery] int skip = 0)
     {
-        var skip_take = ValidateSkipAndTake(skip, take);
-        if(skip_take != null)
+        var skipTake = Helper.ValidateSkipAndTake(skip, take);
+        if(skipTake != null)
         {
-            return BadRequest(skip_take);
+            return BadRequest(skipTake);
         }
 
-        var logs = await context.WorkLogs
+        var logs = await _dbcontext.WorkLogs
             .OrderByDescending(log => log.StartTime)
             .Skip(skip)
             .Take(take)
@@ -140,19 +146,7 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
         return Ok(logs);
     }
     
-    private string? ValidateSkipAndTake(int skip, int take)
-    {
-        if(skip < 0)
-            return "Skip parameter cannot be negative number.";
-
-        if (take <= 0 )
-            return "Take parameter cannot be negative number or zero.";
-
-        if(take > 1000)
-            return "Take parameter can be at most 1000.";
-
-        return null;
-    }
+    
     // checks input, returns null if input is in order
     private async Task<string?> ValidateWorkLogAsync(CreateWorkLogDto workLog)
     {
@@ -179,7 +173,7 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
     {
         // Cannot call e.Id - need to use EF.Property to access the property by name, because T is not known at compile time
         // EF.Property is a function which can tell compiler that there is property "Id" on object e 
-        return await context.Set<T>().AnyAsync(e => EF.Property<int>(e, "Id") == id);
+        return await _dbcontext.Set<T>().AnyAsync(e => EF.Property<int>(e, "Id") == id);
     }
     
 }

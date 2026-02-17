@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SimpleAPI.Data;
 using SimpleAPI.Models;
 using SimpleAPI.DTOs;
+using SimpleAPI.Helpers;
 namespace SimpleAPI.Controllers;
 
 
@@ -13,10 +14,6 @@ namespace SimpleAPI.Controllers;
 [Route("api/[controller]")] // controller takes the name of class and removes Contoller from it - thi is accessible via https://<hostaddress>/api/Database
 public class DatabaseController(MachineDbContext context) : ControllerBase
 {
-    
-    
-
-
     
 
     [HttpGet("operators")]
@@ -58,9 +55,9 @@ public class DatabaseController(MachineDbContext context) : ControllerBase
     [HttpGet("workLogsForProject/{projectId}")]
     public async Task<ActionResult<List<WorkLogDto>>>GetWorkLogsForProject(int projectId, [FromQuery] int take = 50, [FromQuery] int skip = 0)
     {
-        var skip_take = ValidateSkipAndTake(skip,take);
-        if(skip_take != null)
-            return BadRequest(skip_take);
+        var skipTake = Helper.ValidateSkipAndTake(skip,take);
+        if(skipTake != null)
+            return BadRequest(skipTake);
 
         var workLogs = await context.WorkLogs
         .Where(log => log.ProjectId == projectId)
