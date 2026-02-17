@@ -15,6 +15,7 @@
   - `docker exec -it simple_api_database_mock_container bash` - pro přístup do shellu databáze
 - Db běží v containeru na portu 1433
 - pro připojení použije user: sa, pass: Dochazka123
+- po připojení rozběhni skripty v database_scripts - mock data
 ---
 ## Databáze
 
