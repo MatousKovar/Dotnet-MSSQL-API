@@ -17,7 +17,7 @@ public partial class WorkLog
 
     public DateTime? EndTime { get; set; }
 
-    public int? OutputQuantity { get; set; }
+    public int WorkType { get; set; }
 
     public string? Notes { get; set; }
 
@@ -26,4 +26,6 @@ public partial class WorkLog
     public virtual Operator Operator { get; set; } = null!;
 
     public virtual Project Project { get; set; } = null!;
+
+    public virtual WorkType WorkTypeNavigation { get; set; } = null!;
 }

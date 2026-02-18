@@ -10,7 +10,5 @@ public class CreateWorkLogDto
 
     public int ProjectId { get; set; }
 
-    public int? OutputQuantity { get; set; }
-
     public string? Notes { get; set; }
 }

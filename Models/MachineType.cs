@@ -13,6 +13,5 @@ public partial class MachineType
 
     public DateTime? CreatedAt { get; set; }
 
-    // Foreign key for Machines - more more Machines can have this MachineType
     public virtual ICollection<Machine> Machines { get; set; } = new List<Machine>();
 }

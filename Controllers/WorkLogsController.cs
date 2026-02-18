@@ -24,7 +24,6 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
             MachineId = workLog.MachineId,
             OperatorId = workLog.OperatorId,
             ProjectId = workLog.ProjectId, // Assuming 0 is a valid default or handle as needed
-            OutputQuantity = workLog.OutputQuantity,
             StartTime = DateTime.UtcNow, 
             EndTime = null,
             Notes = workLog.Notes
@@ -54,7 +53,6 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
 
             StartTime = log.StartTime,
             EndTime = log.EndTime,
-            OutputQuantity = log.OutputQuantity,
             Notes = log.Notes,
         
             MachineCode = log.Machine.Code,
@@ -99,7 +97,6 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
 
             StartTime = workLog.StartTime,
             EndTime = workLog.EndTime,
-            OutputQuantity = workLog.OutputQuantity,
             Notes = workLog.Notes,
             
             MachineCode = workLog.Machine.Code,
@@ -135,7 +132,6 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
 
                 StartTime = log.StartTime,
                 EndTime = log.EndTime,
-                OutputQuantity = log.OutputQuantity,
                 Notes = log.Notes,
         
                 MachineCode = log.Machine.Code,

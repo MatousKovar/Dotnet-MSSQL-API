@@ -55,7 +55,6 @@ public class ProjectsController(MachineDbContext context) : ControllerBase
             
                 StartTime = log.StartTime,
                 EndTime = log.EndTime,
-                OutputQuantity = log.OutputQuantity,
                 Notes = log.Notes,
 
                 MachineCode = log.Machine.Code,

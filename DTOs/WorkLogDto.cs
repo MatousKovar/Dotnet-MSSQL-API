@@ -22,7 +22,7 @@ public class WorkLogDto
     /// DATETIME2 datatype and Utc timezone
     /// </summary>
     public DateTime? EndTime { get; set; }
-    public int? OutputQuantity { get; set; }
+    
     public string? Notes { get; set; }
 
 

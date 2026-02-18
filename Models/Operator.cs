@@ -18,5 +18,4 @@ public partial class Operator
     public bool? IsActive { get; set; }
 
     public virtual ICollection<WorkLog> WorkLogs { get; set; } = new List<WorkLog>();
-
 }
