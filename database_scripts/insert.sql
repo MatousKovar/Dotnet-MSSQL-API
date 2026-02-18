@@ -1,6 +1,12 @@
 USE machine_db;
 GO
 
+
+INSERT INTO work_type (work_name) VALUES ('Maintenance');
+INSERT INTO work_type ( work_name) VALUES ( 'Preparing machine');
+INSERT INTO work_type ( work_name) VALUES ( 'Producing');
+
+
 -- =============================================
 -- 1. POPULATE MACHINE TYPES
 -- =============================================
@@ -61,33 +67,37 @@ INSERT INTO machines (code, machine_type_id, status, location, purchase_date) VA
 -- =============================================
 -- 5. POPULATE WORK LOGS (Rich history)
 -- =============================================
-INSERT INTO work_logs (machine_id, operator_id, project_id, start_time, end_time, output_quantity, notes) VALUES 
+INSERT INTO work_logs (machine_id, operator_id, project_id, start_time, end_time, notes, work_type) VALUES 
 -- Completed jobs from the past
-(4, 1, 2, '2024-01-10 08:00:00', '2024-01-10 12:00:00', 50, 'Smooth operation, no issues'),
-(1, 2, 6, '2024-01-11 09:30:00', '2024-01-11 14:45:00', 1, 'Filament change required halfway'),
-(4, 4, 2, '2024-01-12 08:00:00', '2024-01-12 16:00:00', 120, 'High output shift'),
-(7, 5, 3, '2024-01-13 10:00:00', '2024-01-13 11:30:00', 200, 'Batch engraving complete'),
-(6, 1, 4, '2024-01-14 07:00:00', '2024-01-14 19:00:00', 15, 'Complex milling, slow feed rate'),
-(9, 6, 8, '2024-01-15 08:00:00', '2024-01-15 12:00:00', 500, 'Mold temp fluctuated initially'),
-(9, 6, 8, '2024-01-15 13:00:00', '2024-01-15 17:00:00', 550, 'Stabilized process'),
+(4, 1, 2, '2024-01-10 08:00:00', '2024-01-10 12:00:00',  'Smooth operation, no issues',3),
+(4, 4, 2, '2024-01-12 08:00:00', '2024-01-12 16:00:00',  'High output shift',3),
+(1, 2, 6, '2024-01-11 09:30:00', '2024-01-11 14:45:00',  'Filament change required halfway',2),
+(7, 5, 3, '2024-01-13 10:00:00', '2024-01-13 11:30:00',  'Batch engraving complete',3),
+(6, 1, 4, '2024-01-14 07:00:00', '2024-01-14 19:00:00',  'Complex milling, slow feed rate',3),
+(9, 6, 8, '2024-01-15 08:00:00', '2024-01-15 12:00:00',  'Mold temp fluctuated initially',3),
+(9, 6, 8, '2024-01-15 13:00:00', '2024-01-15 17:00:00',  'Stabilized process',3),
 
 -- Recent jobs
-(11, 8, 9, '2024-02-01 09:00:00', '2024-02-01 12:00:00', 30, 'Hand soldering prototype board'),
-(3, 2, 6, '2024-02-02 14:00:00', '2024-02-02 18:00:00', 2, 'Resin tank refill needed'),
-(10, 5, 7, '2024-02-03 06:00:00', '2024-02-03 14:00:00', 80, 'Standard run'),
-(4, 4, 2, '2024-02-04 08:00:00', '2024-02-04 12:00:00', 45, 'Tool breakage, downtime 30 mins'),
+(11, 8, 9, '2024-02-01 09:00:00', '2024-02-01 12:00:00', 'Hand soldering prototype board',2),
+(3, 2, 6, '2024-02-02 14:00:00', '2024-02-02 18:00:00',  'Resin tank refill needed',1),
+(10, 5, 7, '2024-02-03 06:00:00', '2024-02-03 14:00:00', 'Standard run',3),
+(4, 4, 2, '2024-02-04 08:00:00', '2024-02-04 12:00:00',  'Tool breakage, downtime 30 mins',1),
 
 -- Maintenance / Issues
-(2, 1, 10, '2024-02-05 08:00:00', '2024-02-05 09:00:00', 0, 'Calibration run only - failed'),
-(2, 1, 10, '2024-02-05 09:30:00', '2024-02-05 10:00:00', 0, 'Maintenance check performed'),
+(2, 1, 10, '2024-02-05 08:00:00', '2024-02-05 09:00:00', 'Calibration run only - failed',2),
+(2, 1, 10, '2024-02-05 09:30:00', '2024-02-05 10:00:00', 'Maintenance check performed',1),
 
 -- Varied operators on same machine
-(6, 4, 4, '2024-02-06 08:00:00', '2024-02-06 16:00:00', 10, 'Day shift progress'),
-(6, 5, 4, '2024-02-06 16:00:00', '2024-02-07 00:00:00', 12, 'Night shift continuation'),
+(6, 4, 4, '2024-02-06 08:00:00', '2024-02-06 16:00:00',  'Day shift progress',3),
+(6, 5, 4, '2024-02-06 16:00:00', '2024-02-07 00:00:00',  'Night shift continuation',3),
 
 -- Currently Running Jobs (end_time IS NULL)
-(1, 2, 10, '2024-02-08 08:30:00', NULL, 0, 'Started morning print job'),
-(7, 8, 3, '2024-02-08 09:15:00', NULL, 0, 'Engraving batch 55'),
-(4, 1, 2, '2024-02-08 10:00:00', NULL, 0, 'Setup for new gear run'),
-(11, 6, 9, '2024-02-08 11:00:00', NULL, 0, 'Reworking faulty connections');
+(1, 2, 10, '2024-02-08 08:30:00', NULL,  'Started morning print job',3),
+(7, 8, 3, '2024-02-08 09:15:00', NULL,  'Engraving batch 55',3),
+(4, 1, 2, '2024-02-08 10:00:00', NULL,  'Setup for new gear run',2),
+(11, 6, 9, '2024-02-08 11:00:00', NULL, 'Reworking faulty connections',2);
+
+
+
+
 GO

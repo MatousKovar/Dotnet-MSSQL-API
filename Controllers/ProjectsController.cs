@@ -28,8 +28,13 @@ public class ProjectsController(MachineDbContext context) : ControllerBase
 
         return Ok(dto);
     }
-    
-    
+
+    /// <summary>
+    /// Returns work logs for current project ordered by time descending
+    /// </summary>
+    /// <param name="take">how many work logs to return, can be max 1000</param>
+    /// <param name="skip">how many work logs to skip</param>
+    /// <returns></returns>
     [HttpGet("work-logs-for-project/{projectId}")]
     public async Task<ActionResult<List<WorkLogDto>>>GetWorkLogsForProject(int projectId, [FromQuery] int take = 50, [FromQuery] int skip = 0)
     {
