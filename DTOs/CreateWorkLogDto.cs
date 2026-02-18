@@ -1,6 +1,4 @@
 namespace SimpleAPI.DTOs;
-using SimpleAPI.Models;
-using SimpleAPI.Data;   
 
 public class CreateWorkLogDto
 {

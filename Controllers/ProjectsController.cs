@@ -71,4 +71,45 @@ public class ProjectsController(MachineDbContext context) : ControllerBase
 
         return Ok(workLogs);
     }
+
+    //TODO when someone starts working in project that is only planned - it should be switched to in_progress
+    [HttpPost("create-project")]
+    public async Task<ActionResult<CreateProjectDto>> CreateProject(CreateProjectDto projectDto)
+    {
+        var newProject = new Project{
+            Name = projectDto.Name,
+            ClientName = projectDto.ClientName,
+            Deadline = projectDto.Deadline,
+            Status = "planned",
+        };
+        
+        context.Projects.Add(newProject);
+        await context.SaveChangesAsync();
+        
+        return CreatedAtAction(
+            nameof(GetProjectById), // method to find inserted log
+            new { id = newProject.Id }, // URL parameters for GetProject
+            new CreateWorkLogResponseDto{ Id = newProject.Id });
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ProjectDto>> GetProjectById(int id)
+    {
+        var projectDto = await context.Projects
+            .Where(p => p.Id == id)
+            .Select(p => new ProjectDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                ClientName = p.ClientName,
+                Deadline = p.Deadline,
+                Status = p.Status,
+            })
+            .FirstOrDefaultAsync();
+        if (projectDto == null)
+        {
+            return NotFound("No project with id " + id);
+        }
+        return Ok(projectDto);
+    }
 }

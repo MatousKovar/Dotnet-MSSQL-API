@@ -9,6 +9,9 @@ public partial class ProjectDto
 
     public string? ClientName { get; set; }
 
+    /// <summary>
+    /// Expected in UTC timezone
+    /// </summary>
     public DateOnly? Deadline { get; set; }
 
     public string? Status { get; set; }
