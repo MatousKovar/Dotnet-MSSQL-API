@@ -61,6 +61,10 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
             ProjectName = log.Project.Name
         }).FirstOrDefaultAsync();
 
+        //If work is done on a project that is in status planned - then move the project to in_progress
+        
+        
+        
         if (logDto == null)
         {
             return NotFound($"Work log with ID {id} not found.");
@@ -78,7 +82,6 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
     [HttpPut("end-work-session")]
     public async Task<ActionResult<WorkLogDto>> EndWorkSession(int workLogId)
     {
-       
         WorkLog? workLog = await context.WorkLogs.FindAsync(workLogId);
 
         if(workLog == null)
