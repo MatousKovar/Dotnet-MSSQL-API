@@ -71,8 +71,7 @@ public class ProjectsController(MachineDbContext context) : ControllerBase
 
         return Ok(workLogs);
     }
-
-    //TODO when someone starts working in project that is only planned - it should be switched to in_progress
+    
     [HttpPost("create-project")]
     public async Task<ActionResult<CreateProjectDto>> CreateProject(CreateProjectDto projectDto)
     {

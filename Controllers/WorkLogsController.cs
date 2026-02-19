@@ -12,13 +12,15 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
 {
     [HttpPost("register-work-session")]
     public async Task<ActionResult<CreateWorkLogResponseDto>> RegisterWorkSession(CreateWorkLogDto workLog)
-    {
+    {   
+        // checking if ids mentioned in work-log exist
         string? validationError = await ValidateWorkLogAsync(workLog);
         if (validationError != null)
         {
             return BadRequest(validationError);
         }
 
+        
         var newLog = new WorkLog
         {
             MachineId = workLog.MachineId,
@@ -32,6 +34,19 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
         context.WorkLogs.Add(newLog);
         await context.SaveChangesAsync();
 
+        // change status of project if possible
+        var project = await context.Projects.FindAsync(workLog.ProjectId);
+        if (project!.Status == null)
+        {
+            project.Status = "in_progress";
+        }
+        
+        if (project!.Status == "planned")
+        {
+            project.Status = "in_progress";
+        }
+        
+        
         //Best practice to return Created code 201 with location of new resource and its ID, so that client can easily access it
         return CreatedAtAction(
             nameof(GetLogById), // method to find inserted log
@@ -60,10 +75,6 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
             OperatorLastname = log.Operator.LastName,
             ProjectName = log.Project.Name
         }).FirstOrDefaultAsync();
-
-        //If work is done on a project that is in status planned - then move the project to in_progress
-        
-        
         
         if (logDto == null)
         {
