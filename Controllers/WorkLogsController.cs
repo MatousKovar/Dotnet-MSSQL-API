@@ -180,4 +180,11 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
         return await context.Set<T>().AnyAsync(e => EF.Property<int>(e, "Id") == id);
     }
     
+    [HttpGet("work-types")]
+    public async Task<ActionResult<List<WorkType>>> GetWorkTypes()
+    {
+        var workTypes = await context.WorkTypes.Select(p => new WorkTypeDto{WorkName = p.WorkName}).ToListAsync();
+
+        return Ok(workTypes);
+    }
 }
