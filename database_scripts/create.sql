@@ -17,6 +17,7 @@ DROP TABLE IF EXISTS machines;
 DROP TABLE IF EXISTS projects;
 DROP TABLE IF EXISTS operators;
 DROP TABLE IF EXISTS machine_types;
+DROP TABLE IF EXISTS work_types;
 DROP TABLE IF EXISTS work_type;
 
 GO
@@ -55,7 +56,7 @@ CREATE TABLE machines (
     CONSTRAINT FK_Machines_Types FOREIGN KEY (machine_type_id) REFERENCES machine_types(id)
 );
 
-CREATE TABLE work_type (
+CREATE TABLE work_types (
                            id INT PRIMARY KEY IDENTITY (1,1),
                            work_name NVARCHAR(MAX)
 );
@@ -67,10 +68,10 @@ CREATE TABLE work_logs (
     project_id INT NOT NULL,
     start_time DATETIME2 NOT NULL,
     end_time DATETIME2,
-    work_type INT NOT NULL,
+    work_type_id INT NOT NULL,
     notes NVARCHAR(MAX),
     CONSTRAINT FK_Logs_Machines FOREIGN KEY (machine_id) REFERENCES machines(id),
-    CONSTRAINT FK_Logs_Worktype FOREIGN KEY (work_type) REFERENCES work_type(id),
+    CONSTRAINT FK_Logs_Worktypes FOREIGN KEY (work_type_id) REFERENCES work_types(id),
     CONSTRAINT FK_Logs_Operators FOREIGN KEY (operator_id) REFERENCES operators(id),
     CONSTRAINT FK_Logs_Projects FOREIGN KEY (project_id) REFERENCES projects(id)
 );

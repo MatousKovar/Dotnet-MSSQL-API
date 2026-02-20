@@ -2,9 +2,9 @@ USE machine_db;
 GO
 
 
-INSERT INTO work_type (work_name) VALUES ('Maintenance');
-INSERT INTO work_type ( work_name) VALUES ( 'Preparing machine');
-INSERT INTO work_type ( work_name) VALUES ( 'Producing');
+INSERT INTO work_types (work_name) VALUES ('Maintenance');
+INSERT INTO work_types ( work_name) VALUES ( 'Preparing machine');
+INSERT INTO work_types ( work_name) VALUES ( 'Producing');
 
 
 -- =============================================
@@ -67,8 +67,7 @@ INSERT INTO machines (code, machine_type_id, status, location, purchase_date) VA
 -- =============================================
 -- 5. POPULATE WORK LOGS (Rich history)
 -- =============================================
-INSERT INTO work_logs (machine_id, operator_id, project_id, start_time, end_time, notes, work_type) VALUES 
--- Completed jobs from the past
+INSERT INTO work_logs (machine_id, operator_id, project_id, start_time, end_time, notes, work_type_id) VALUES-- Completed jobs from the past
 (4, 1, 2, '2024-01-10 08:00:00', '2024-01-10 12:00:00',  'Smooth operation, no issues',3),
 (4, 4, 2, '2024-01-12 08:00:00', '2024-01-12 16:00:00',  'High output shift',3),
 (1, 2, 6, '2024-01-11 09:30:00', '2024-01-11 14:45:00',  'Filament change required halfway',2),

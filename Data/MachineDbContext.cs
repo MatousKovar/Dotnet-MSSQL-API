@@ -27,16 +27,16 @@ public partial class MachineDbContext : DbContext
     public virtual DbSet<WorkLog> WorkLogs { get; set; }
 
     public virtual DbSet<WorkType> WorkTypes { get; set; }
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Machine>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__machines__3213E83F6F72BFBD");
+            entity.HasKey(e => e.Id).HasName("PK__machines__3213E83F757E767D");
 
             entity.ToTable("machines");
 
-            entity.HasIndex(e => e.Code, "UQ__machines__357D4CF9BB2142EB").IsUnique();
+            entity.HasIndex(e => e.Code, "UQ__machines__357D4CF9A758BABD").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Code)
@@ -58,7 +58,7 @@ public partial class MachineDbContext : DbContext
 
         modelBuilder.Entity<MachineType>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__machine___3213E83F37B15DD3");
+            entity.HasKey(e => e.Id).HasName("PK__machine___3213E83F8EAB2780");
 
             entity.ToTable("machine_types");
 
@@ -74,11 +74,11 @@ public partial class MachineDbContext : DbContext
 
         modelBuilder.Entity<Operator>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__operator__3213E83FD0B20A08");
+            entity.HasKey(e => e.Id).HasName("PK__operator__3213E83FA4A2E945");
 
             entity.ToTable("operators");
 
-            entity.HasIndex(e => e.BadgeNumber, "UQ__operator__3E4D103E431C1FE6").IsUnique();
+            entity.HasIndex(e => e.BadgeNumber, "UQ__operator__3E4D103E8F2D35D0").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.BadgeNumber)
@@ -100,7 +100,7 @@ public partial class MachineDbContext : DbContext
 
         modelBuilder.Entity<Project>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__projects__3213E83F0430358A");
+            entity.HasKey(e => e.Id).HasName("PK__projects__3213E83FCB233B87");
 
             entity.ToTable("projects");
 
@@ -119,7 +119,7 @@ public partial class MachineDbContext : DbContext
 
         modelBuilder.Entity<WorkLog>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__work_log__3213E83F08FC26AA");
+            entity.HasKey(e => e.Id).HasName("PK__work_log__3213E83FD68994B7");
 
             entity.ToTable("work_logs");
 
@@ -130,7 +130,7 @@ public partial class MachineDbContext : DbContext
             entity.Property(e => e.OperatorId).HasColumnName("operator_id");
             entity.Property(e => e.ProjectId).HasColumnName("project_id");
             entity.Property(e => e.StartTime).HasColumnName("start_time");
-            entity.Property(e => e.WorkType).HasColumnName("work_type");
+            entity.Property(e => e.WorkTypeId).HasColumnName("work_type_id");
 
             entity.HasOne(d => d.Machine).WithMany(p => p.WorkLogs)
                 .HasForeignKey(d => d.MachineId)
@@ -147,17 +147,17 @@ public partial class MachineDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Logs_Projects");
 
-            entity.HasOne(d => d.WorkTypeNavigation).WithMany(p => p.WorkLogs)
-                .HasForeignKey(d => d.WorkType)
+            entity.HasOne(d => d.WorkType).WithMany(p => p.WorkLogs)
+                .HasForeignKey(d => d.WorkTypeId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Logs_Worktype");
+                .HasConstraintName("FK_Logs_Worktypes");
         });
 
         modelBuilder.Entity<WorkType>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__work_typ__3213E83FE0DB03F1");
+            entity.HasKey(e => e.Id).HasName("PK__work_typ__3213E83FAD7C3C63");
 
-            entity.ToTable("work_type");
+            entity.ToTable("work_types");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.WorkName).HasColumnName("work_name");

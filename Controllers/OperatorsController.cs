@@ -55,8 +55,8 @@ public class OperatorsController(MachineDbContext context) : ControllerBase
     public async Task<ActionResult<OperatorDto>> GetOperatorById([FromRoute] int id)
     {
         var oper = await context.Operators
-        .Where(op=> op.Id = id)
-        .Select(op=> new OperatorDto
+        .Where(op => op.Id == id)
+        .Select(op => new OperatorDto
         {
             Id = op.Id,
             FirstName = op.FirstName,

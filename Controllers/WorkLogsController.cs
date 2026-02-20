@@ -183,7 +183,7 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
     [HttpGet("work-types")]
     public async Task<ActionResult<List<WorkType>>> GetWorkTypes()
     {
-        var workTypes = await context.WorkTypes.Select(p => new WorkTypeDto{WorkName = p.WorkName}).ToListAsync();
+        var workTypes = await context.WorkTypes.ToListAsync();
 
         return Ok(workTypes);
     }

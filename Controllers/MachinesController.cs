@@ -55,7 +55,7 @@ public class MachinesController(MachineDbContext context) : ControllerBase
                 
                 //getting last Maintenance date
                 LatestLog = context.WorkLogs
-                    .Where(wl => wl.MachineId == m.Id && wl.WorkType.Name == "Maintenance")
+                    .Where(wl => wl.MachineId == m.Id && wl.WorkType.WorkName == "Maintenance")
                     .OrderByDescending(wl => wl.StartTime)
                     .Select(wl => new { wl.StartTime, wl.EndTime })
                     .FirstOrDefault()
@@ -64,7 +64,6 @@ public class MachinesController(MachineDbContext context) : ControllerBase
 
         var overdueMachines = new List<MachineMaintenanceOverdueDto>();
 
-        // 2. IN-MEMORY CALCULATION: Figure out which ones are actually overdue
         foreach (var item in machinesData)
         {
             DateTime? lastMaintenance = item.LatestLog?.EndTime ?? item.LatestLog?.StartTime;
@@ -76,7 +75,7 @@ public class MachinesController(MachineDbContext context) : ControllerBase
             if (lastMaintenance.HasValue)
             {
                 // It has been maintained before. Check if the next interval has passed.
-                nextMaintenance = lastMaintenance.Value.AddHours(item.IntervalHours);
+                nextMaintenance = lastMaintenance.Value.AddHours(item.IntervalHours.Value);
                 
                 if (nextMaintenance < now)
                 {
@@ -85,11 +84,7 @@ public class MachinesController(MachineDbContext context) : ControllerBase
                 }
             }
             else 
-            {
-                // It has NEVER been maintained. 
-                // We assume it's overdue (you might want to calculate this from a 'PurchaseDate' instead)
                 isOverdue = true; 
-            }
 
             if (isOverdue)
             {
@@ -112,6 +107,6 @@ public class MachinesController(MachineDbContext context) : ControllerBase
             .ToList();
 
 
-        return Ok(overdueMachines); // Note: We return the correct list now!
+        return Ok(overdueMachines);
     }
 }
