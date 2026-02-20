@@ -9,12 +9,6 @@ namespace SimpleAPI.Controllers;
 [Route("api/[controller]")]
 public class MachinesController(MachineDbContext context) : ControllerBase
 {
-    private struct maintainanceInfo
-    {
-        DateTime lastMaintainance;
-        DateTime plannedMaintainance;
-        int MaintenanceIntervalHours;
-    }
     // ActionResult<T> - contains HTTP status codes and data
     // api/Machines
     [HttpGet]
@@ -43,80 +37,81 @@ public class MachinesController(MachineDbContext context) : ControllerBase
         return Ok(machines);
     }
 
-    [HttpGet("machine-maintenance-overdue")]
-    public async Task<ActionResult<List<MachineDto>>> GetMachinesWithOverdueMaintenance()
+    [HttpGet("maintenance-overdue")]
+    public async Task<ActionResult<List<MachineMaintenanceOverdueDto>>> GetMachinesWithOverdueMaintenance()
     {
-        DateTime today = DateTime.UtcNow.Date;
-
-        List<MachineDto> machines = await context.Machines
-            .Where(m => m.NextMaintenanceDate < today)
-            .OrderBy(m => m.NextMaintenanceDate)
-            .Include(m => m.MachineType)
-            .Select(m => new MachineDto
+        var now = DateTime.UtcNow;
+        // Ignoring machines without maintenance interval
+        var machinesData = await context.Machines
+            .Where(m => m.MachineType != null && m.MachineType.MaintenanceIntervalHours > 0)
+            .Select(m => new 
             {
+                MachineId = m.Id,
                 Code = m.Code,
                 Status = m.Status,
                 Location = m.Location,
-                NextMaintenanceDate = m.NextMaintenanceDate,
-                MachineTypeName = m.MachineType!.Name ?? "Unknown"
+                MachineTypeName = m.MachineType!.Name,
+                IntervalHours = m.MachineType.MaintenanceIntervalHours,
+                
+                //getting last Maintenance date
+                LatestLog = context.WorkLogs
+                    .Where(wl => wl.MachineId == m.Id && wl.WorkType.Name == "Maintenance")
+                    .OrderByDescending(wl => wl.StartTime)
+                    .Select(wl => new { wl.StartTime, wl.EndTime })
+                    .FirstOrDefault()
             })
             .ToListAsync();
 
-        var machinesAfterDuedate = new List<MachineMaintainanceInfoDto>();
+        var overdueMachines = new List<MachineMaintenanceOverdueDto>();
 
-
-        foreach (var machine in machines)
+        // 2. IN-MEMORY CALCULATION: Figure out which ones are actually overdue
+        foreach (var item in machinesData)
         {
-            var expectedMaintainanceDuedate = GetLastMaintenanceDateAsync(machine.Id);
-            if (expectedMaintainanceDuedate == null || expectedMaintainanceDuedate < today)
+            DateTime? lastMaintenance = item.LatestLog?.EndTime ?? item.LatestLog?.StartTime;
+            
+            bool isOverdue = false;
+            DateTime? nextMaintenance = null;
+            double overdueHours = 0;
+
+            if (lastMaintenance.HasValue)
             {
-                var maintainanceDto = 
+                // It has been maintained before. Check if the next interval has passed.
+                nextMaintenance = lastMaintenance.Value.AddHours(item.IntervalHours);
+                
+                if (nextMaintenance < now)
+                {
+                    isOverdue = true;
+                    overdueHours = Math.Round((now - nextMaintenance.Value).TotalHours, 1);
+                }
             }
-                machinesAfterDuedate.Add(machine);    
+            else 
+            {
+                // It has NEVER been maintained. 
+                // We assume it's overdue (you might want to calculate this from a 'PurchaseDate' instead)
+                isOverdue = true; 
+            }
+
+            if (isOverdue)
+            {
+                overdueMachines.Add(new MachineMaintenanceOverdueDto
+                {
+                    MachineId = item.MachineId,
+                    Code = item.Code,
+                    Status = item.Status ?? "Unknown",
+                    Location = item.Location ?? "Unknown",
+                    MachineTypeName = item.MachineTypeName ?? "Unknown",
+                    LastMaintenanceDate = lastMaintenance,
+                    NextExpectedMaintenanceDate = nextMaintenance,
+                    OverdueByHours = overdueHours
+                });
+            }
         }
 
+        overdueMachines = overdueMachines
+            .OrderByDescending(m => m.OverdueByHours)
+            .ToList();
 
-        if (machinesAfterDuedate.Count == 0)
-        {
-            return NotFound("No machines with overdue maintenance found");
-        }
 
-        return Ok(machines);
-    }
-
-    // Helper method to calculate the last maintenance date for machine
-    // returns null if no maintenance logs found for the machine
-    private async Task<DateTime?> GetLastMaintenanceDateAsync(int machineId)
-    {
-        var lastMaintenanceLog = await _context.WorkLogs
-            .Where(wl => wl.MachineId == machineId && wl.WorkType.Name == "Maintenance") 
-            .OrderByDescending(wl => wl.StartTime) 
-            .Select(wl => new { wl.StartTime, wl.EndTime }) 
-            .FirstOrDefaultAsync();
-        if (lastMaintenanceLog == null) 
-        {
-            return null; 
-        }
-
-        return lastMaintenanceLog.EndTime ?? lastMaintenanceLog.StartTime;
-    }
-
-    //returns null if machine not found or if no maintenance logs found for the machine
-    private async Task<DateTime?> GetNextMaintenanceDateAsync(int machineId)
-    {
-        DateTime? lastMaintenanceDate = await GetLastMaintenanceDateAsync(machineId);
-        if (lastMaintenanceDate == null) 
-        {
-            return null; 
-        }
-
-        var machine = await _context.Machines.FindAsync(machineId);
-        if (machine == null || machine.MachineType == null) 
-        {
-            return null; 
-        }
-
-        int maintenanceIntervalHours = machine.MachineType.MaintenanceIntervalHours;
-        return new maintainanceInfo{ lastMaintenanceDate, lastMaintenanceDate.Value.AddHours(maintenanceIntervalHours), MaintenanceIntervalHours};
+        return Ok(overdueMachines); // Note: We return the correct list now!
     }
 }
