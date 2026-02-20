@@ -50,4 +50,25 @@ public class OperatorsController(MachineDbContext context) : ControllerBase
         await context.SaveChangesAsync();
         return CreatedAtAction(nameof(GetOperators), new { id = op.Id }, new CreateOperatorResponseDto { Id = op.Id });
     }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<OperatorDto>> GetOperatorById([FromRoute] int id)
+    {
+        var oper = await context.Operators
+        .Where(op=> op.Id = id)
+        .Select(op=> new OperatorDto
+        {
+            Id = op.Id,
+            FirstName = op.FirstName,
+            LastName = op.LastName,
+            BadgeNumber = op.BadgeNumber,
+            Email = op.Email,
+            IsActive = op.IsActive
+        })
+        .FirstOrDefaultAsync();
+        if (oper == null)
+            return NotFound($"Operator with id: {id} not found in database"); 
+
+        return Ok(oper);
+    }
 }
