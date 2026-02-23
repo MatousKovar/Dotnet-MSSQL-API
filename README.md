@@ -27,6 +27,7 @@
 - Tvorba modelů je jednoduchá pomocí: `dotnet ef dbcontext scaffold "Server=localhost,1433;Database=machine_db;User Id=sa;Password=Dochazka123;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer -o Models --force --namespace SimpleAPI.Models --context-dir Data` viz: dotnet ef dbcontext scaffold --help 
   - Důležité je v aby namespace sedělo se zbytkem projektu (automaticky se tvoří podle jména db tuším), 
   - context-dir automaticky nastaví kam se uloží DbContext class
+  - Pokud by se pridavala nejaka custom logika - tak se hodi vytvorit si vedle soubor se stejnym jmenem classy a keywordem `partial` - pri scaffoldu se tento soubor neprepise a protoze je jmeno tridy stejne tak se pri buildu slouci s tim co vygeneroval EF
 - Pro ukladani citlivych informaci mimo zdroják: https://learn.microsoft.com/en-us/ef/core/dbcontext-configuration/
 - Idealne na produkci budu mit appsettings.json DefaultConnection jako enviromantal secret na gitu, nebudu to mit v plaintextu a nastavim, ze zmeny v appsettings.json se nepushujou, aby mi to vyvojari neprepisovali, pro tohle lokalni repo je to overkill
 - Date time uložen jako [datetime2](https://learn.microsoft.com/en-us/sql/t-sql/data-types/datetime2-transact-sql?view=sql-server-ver17)
@@ -49,3 +50,9 @@
 ### 4) Čas
 - Čas je nastavován vždy serverem - při přijetí register-session, nebo end-session
 - Čas je ukládán pomocí `DateTime.UtcNow`
+
+### 5) Testy
+- Texty pomocí xunit `dotnet new xunit -n SimpleAPI.Tests`
+- Pridani testu do projektu `dotnet sln add SimpleAPI.Tests/SimpleAPI.Tests.csproj`
+- Pridani cesty k testum `dotnet add SimpleAPI.Tests/SimpleAPI.Tests.csproj reference SimpleAPI/SimpleAPI.csproj`
+- Pro testovani se vytvari in memory testovaci databaze pomoci `Microsoft.EntityFrameworkCore.InMemory`

@@ -55,7 +55,7 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
     }
 
     
-    [HttpGet("work-logs/{id}")]
+    [HttpGet("{id}")]
     public async Task<ActionResult<WorkLogDto>> GetLogById([FromRoute] int id)
     {
         var logDto = await context.WorkLogs
