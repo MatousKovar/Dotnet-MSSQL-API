@@ -1,14 +1,8 @@
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.EntityFrameworkCore;
-using SimpleAPI.Data;
 using SimpleAPI.DTOs;
-using SimpleAPI.Models;
-
-namespace SimpleAPI.Tests.Controllers;
 using System.Net;
 using System.Net.Http.Json;
-using Microsoft.Extensions.DependencyInjection;
 
+namespace SimpleAPI.Tests.Controllers;
 public class WorkLogsControllerTests(CustomWebApplicationFactory factory) : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly HttpClient _client = factory.CreateClient();
@@ -24,9 +18,8 @@ public class WorkLogsControllerTests(CustomWebApplicationFactory factory) : ICla
             ProjectId = 99 
         };
         
-        
         //testing non existing project
-        var response = await _client.PostAsJsonAsync("/api/worklogs/register-work-session", requestDto);
+        var response = await _client.PostAsJsonAsync("api/WorkLogs/register-work-session", requestDto);
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         
         requestDto.OperatorId = 99;

@@ -23,4 +23,14 @@
     <PackageReference Include="xunit.extensibility.core" Version="2.9.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="SimpleAPI.Tests\obj\project.assets.json" />
+    <_ContentIncludedByDefault Remove="SimpleAPI.Tests\obj\project.packagespec.json" />
+    <_ContentIncludedByDefault Remove="SimpleAPI.Tests\obj\SimpleAPI.Tests.csproj.nuget.dgspec.json" />
+    <Compile Remove="SimpleAPI.Tests\**" />
+    <Content Remove="SimpleAPI.Tests\**" />
+    <EmbeddedResource Remove="SimpleAPI.Tests\**" />
+    <None Remove="SimpleAPI.Tests\**" />
+  </ItemGroup>
+
 </Project>

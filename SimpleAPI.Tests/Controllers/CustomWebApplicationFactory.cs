@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SimpleAPI.Data;
 using SimpleAPI.Models;
 
-namespace SimpleAPI.Tests;
+namespace SimpleAPI.Tests.Controllers;
 
 // Creates database with basic data
 public class CustomWebApplicationFactory : WebApplicationFactory<Program>
