@@ -112,6 +112,7 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
             EndTime = workLog.EndTime,
             Notes = workLog.Notes,
             
+            // MachineId, OperatorId, ProjectId exist - checked when creating work log
             MachineCode = workLog.Machine.Code,
             OperatorFirstname = workLog.Operator.FirstName,
             OperatorLastname = workLog.Operator.LastName,
