@@ -36,7 +36,7 @@ public class WorkLogsControllerTests(CustomWebApplicationFactory factory) : ICla
     }
 
     [Fact]
-    public async Task TestChangingProjectState()
+    public async Task TestingRegisterWorkSessionEndToEnd()
     {
         var workLog = new CreateWorkLogDto
         {
@@ -45,32 +45,28 @@ public class WorkLogsControllerTests(CustomWebApplicationFactory factory) : ICla
             ProjectId = 1
         };
         
+        // check if code for registering is ok
         var response = await _client.PostAsJsonAsync("api/WorkLogs/register-work-session", workLog);
-        
-        // Vraci spravny code
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         
         
-        var responseData = await response.Content.ReadFromJsonAsync<CreateWorkLogResponseDto>();
-        
-        // Vraci validni Id noveho work logu
-        Assert.NotNull(responseData);
-        Assert.True(responseData.Id > 0);
+        //checking if project
+        var projectResponse = await _client.GetAsync($"api/Projects/{workLog.ProjectId}");
+        Assert.Equal(HttpStatusCode.OK, projectResponse.StatusCode);
 
-        // muze se stat ze kdybychom toto delali mimo scope, tak nam vrati na
-        // database je vzdy scoped - tvori se objekt DbContext pro kazdy request
-        // pokud by to bylo v jednom scopu, tak ackoliv muze EF mit tu zmenu provedenou, tak muze mit zacachovanou nejakou verze tech jednotlivych objekut
-        // kde se ty zmeny jeste nepropsaly
-        using (var scope = factory.Services.CreateScope())
-        {
-            var db = scope.ServiceProvider.GetRequiredService<MachineDbContext>();
-            
-            var updatedProject = await db.Projects.FindAsync(workLog.ProjectId);
-            
-            // kontrola, ze se prepsal status projektu - jakmile je u projektu alespon jeden WorkLog, tak je automaticky 'in_progress'
-            Assert.NotNull(updatedProject);
-            Assert.Equal("in_progress", updatedProject.Status);
-        }
+
+        var projectData = await projectResponse.Content.ReadFromJsonAsync<ProjectDto>();
+        Assert.NotNull(projectData);
+        Assert.Equal("in_progress", projectData.Status);
+        
+        var httpResponseMessage = await _client.GetAsync($"api/Projects/work-logs-for-project/{workLog.ProjectId}");
+        Assert.Equal(HttpStatusCode.OK, httpResponseMessage.StatusCode);
+
+
+        var returnedLogs = await httpResponseMessage.Content.ReadFromJsonAsync<List<WorkLogDto>>();
+        Assert.NotNull(returnedLogs);
+        Assert.NotEmpty(returnedLogs);
+        
         
     }
 }

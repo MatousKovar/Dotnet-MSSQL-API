@@ -38,4 +38,11 @@ public class ProjectControllerTest(CustomWebApplicationFactory factory) :  IClas
         }
         
     }
+
+    [Fact]
+    public async Task TestWorkLogsForProject()
+    {
+        var reponse = await _client.PostAsync("/api/Projects/work-logs-for-project", new StringContent("1"));
+        
+    }
 }
