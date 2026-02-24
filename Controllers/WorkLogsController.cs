@@ -30,10 +30,7 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
             EndTime = null,
             Notes = workLog.Notes
         };
-
-        context.WorkLogs.Add(newLog);
-        await context.SaveChangesAsync();
-
+        
         // change status of project if possible
         var project = await context.Projects.FindAsync(workLog.ProjectId);
         if (project!.Status == null)
@@ -46,6 +43,8 @@ public class WorkLogsController(MachineDbContext context) : ControllerBase
             project.Status = "in_progress";
         }
         
+        context.WorkLogs.Add(newLog);
+        await context.SaveChangesAsync();
         
         //Best practice to return Created code 201 with location of new resource and its ID, so that client can easily access it
         return CreatedAtAction(

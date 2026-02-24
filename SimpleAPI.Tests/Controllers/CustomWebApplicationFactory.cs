@@ -9,6 +9,12 @@ using SimpleAPI.Models;
 
 namespace SimpleAPI.Tests.Controllers;
 
+/**
+ * Je potreva vytvorit custom factory, protoze pri spusteni se pomoci DI injectuje hlavni databaze
+ * A zde v testech by se injecotavala druha - nelze
+ * Tady se jen provaci to ze se smaze pripojena DB a potom se pripoji ke specialni InMemory databazi, ktera je pouzivana na testy
+ * zaroven jsou vlozeny zakladni data - test vstupu
+ */
 public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 {
     
@@ -16,7 +22,6 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
     {
         builder.ConfigureServices(services =>
         {
-            // 1. Smažeme původní nastavení (to už známe)
             var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<MachineDbContext>));
             if (descriptor != null) services.Remove(descriptor);
 
@@ -28,7 +33,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
             services.AddDbContext<MachineDbContext>(options => 
             {
                 options.UseInMemoryDatabase("GlobalSharedTestDb");
-                options.UseInternalServiceProvider(inMemoryServiceProvider); // <--- TOTO ŘEŠÍ TVŮJ PROBLÉM
+                options.UseInternalServiceProvider(inMemoryServiceProvider);
             });
         });
     }
