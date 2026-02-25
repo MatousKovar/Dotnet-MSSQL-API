@@ -28,7 +28,7 @@ public class OperatorControllerTest(CustomWebApplicationFactory factory) : IClas
         Assert.NotNull(responseId);
         
         //check if operator exists
-        var responseSearch = await _client.PostAsync("api/Operators/",new StringContent(responseId.Id.ToString()));
+        var responseSearch = await _client.GetAsync($"api/Operators/{responseId.Id}");
         Assert.Equal(HttpStatusCode.OK, responseSearch.StatusCode);
         var responseContent = await responseSearch.Content.ReadFromJsonAsync<OperatorDto>();
         Assert.NotNull(responseContent);
