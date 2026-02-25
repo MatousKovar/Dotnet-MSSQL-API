@@ -109,4 +109,15 @@ public class MachinesController(MachineDbContext context) : ControllerBase
 
         return Ok(overdueMachines);
     }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<MachineDto>> GetMachineById([FromRoute] int id)
+    {
+        
+        var response = await context.Machines.FindAsync(id);
+        if (response == null)
+            return NotFound($"Machine with id {id} not found.");
+        
+        return Ok(response);
+    }
 }
