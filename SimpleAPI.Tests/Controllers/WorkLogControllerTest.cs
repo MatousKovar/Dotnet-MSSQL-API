@@ -66,7 +66,5 @@ public class WorkLogsControllerTests(CustomWebApplicationFactory factory) : ICla
         var returnedLogs = await httpResponseMessage.Content.ReadFromJsonAsync<List<WorkLogDto>>();
         Assert.NotNull(returnedLogs);
         Assert.NotEmpty(returnedLogs);
-        
-        
     }
 }
