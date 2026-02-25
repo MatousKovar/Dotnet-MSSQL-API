@@ -56,3 +56,4 @@
 - Pridani testu do projektu `dotnet sln add SimpleAPI.Tests/SimpleAPI.Tests.csproj`
 - Pridani cesty k testum `dotnet add SimpleAPI.Tests/SimpleAPI.Tests.csproj reference SimpleAPI/SimpleAPI.csproj`
 - Pro testovani se vytvari in memory testovaci databaze pomoci `Microsoft.EntityFrameworkCore.InMemory`
+- Tridy dedi z IClassFixture - normalne se pri testovani pro kazdy fakt vytvori nova instance tridy, tohle dovoli aby vsechny testy ve tride sdilely stejnou instanci

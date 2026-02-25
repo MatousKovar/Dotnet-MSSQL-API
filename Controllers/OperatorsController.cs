@@ -36,7 +36,7 @@ public class OperatorsController(MachineDbContext context) : ControllerBase
     /// </summary>
     /// <param name="operatorDto"></param>
     [HttpPost("register-operator")]
-    public async Task<ActionResult<List<CreateOperatorResponseDto>>> RegisterOperator(CreateOperatorDto operatorDto)
+    public async Task<ActionResult<CreateOperatorResponseDto>> RegisterOperator(CreateOperatorDto operatorDto)
     {
         var op = new Operator
         {
