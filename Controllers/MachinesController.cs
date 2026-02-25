@@ -25,8 +25,7 @@ public class MachinesController(MachineDbContext context) : ControllerBase
                 Code = m.Code,
                 Status = m.Status,
                 Location = m.Location,
-            
-                MachineTypeName = m.MachineType!.Name ?? "Unknown"
+                MachineTypeId = m.MachineTypeId
             })
             .ToListAsync();
 
@@ -118,6 +117,14 @@ public class MachinesController(MachineDbContext context) : ControllerBase
         var response = await context.Machines.FindAsync(id);
         if (response == null)
             return NotFound($"Machine with id {id} not found.");
+
+        var machineDto = new MachineDto
+        {
+            Code = response.Code,
+            Status = response.Status,
+            Location = response.Location,
+            MachineTypeId = response.MachineTypeId ?? null,
+        };
         
         return Ok(response);
     }

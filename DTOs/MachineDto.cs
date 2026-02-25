@@ -11,5 +11,5 @@ public class MachineDto
 
     public string? Location { get; set; }
 
-    public string MachineTypeName { get; set; } = null!;
+    public int? MachineTypeId { get; set; } 
 }
