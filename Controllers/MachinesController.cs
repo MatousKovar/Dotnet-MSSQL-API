@@ -144,6 +144,30 @@ public class MachinesController(MachineDbContext context) : ControllerBase
         return CreatedAtAction(nameof(GetMachineById), new { id = newMachine.Id }, new CreateMachineResponseDto {Id =  newMachine.Id});
     }
     
+    [HttpPost("create-machine-type")]
+    public async Task<ActionResult<CreateMachineTypeResponseDto>> CreateMachineType(CreateMachineTypeDto machineType)
+    {
+        MachineType newMachine = new MachineType
+        {
+            Name = machineType.Name,
+            MaintenanceIntervalHours = machineType.MaintenanceIntervalHours,
+            CreatedAt = DateTime.UtcNow
+        };
+        
+        context.MachineTypes.Add(newMachine);
+        await context.SaveChangesAsync();
+        
+        return CreatedAtAction(nameof(GetMachineById), new { id = newMachine.Id }, new CreateMachineResponseDto {Id =  newMachine.Id});
+    }
+
+
+    [HttpGet("machine-types")]
+    public async Task<ActionResult<MachineTypeDto>> GetMachineTypes()
+    {
+        
+        
+    }
+    
     private async Task<bool> IdExists<T>(int id) where T : class
     {
         // Cannot call e.Id - need to use EF.Property to access the property by name, because T is not known at compile time
