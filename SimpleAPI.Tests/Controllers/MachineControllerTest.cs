@@ -1,3 +1,6 @@
+using System.Net;
+using SimpleAPI.DTOs;
+
 namespace SimpleAPI.Tests.Controllers;
 
 public class MachineControllerTest(CustomWebApplicationFactory factory) : IClassFixture<CustomWebApplicationFactory>
@@ -9,7 +12,17 @@ public class MachineControllerTest(CustomWebApplicationFactory factory) : IClass
     {
         var response = await _client.GetAsync("api/Machines/1");
         Assert.NotNull(response);
-        Assert.True(response.IsSuccessStatusCode);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task TestMachinesEndToEnd()
+    {
+        var newMachine = MachineDto
+        {
+            
+        }
+        
     }
     
     

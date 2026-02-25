@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SimpleAPI.Data;
 using SimpleAPI.Models;
 using SimpleAPI.DTOs;
+using SimpleAPI.Helpers;
 namespace SimpleAPI.Controllers;
 
 [ApiController]
@@ -120,4 +121,34 @@ public class MachinesController(MachineDbContext context) : ControllerBase
         
         return Ok(response);
     }
+
+    [HttpPost("create-machine")]
+    public async Task<ActionResult<CreateMachineResponseDto>> CreateMachine(CreateMachineDto machine)
+    {
+        bool validateMachineTypeId = await IdExists<MachineType>(machine.MachineTypeId);
+        
+        if  (!validateMachineTypeId) return BadRequest("Invalid machine type id.");
+
+        Machine newMachine = new Machine
+        {
+            Code = machine.Code,
+            Status = machine.Status,
+            Location = machine.Location,
+            MachineTypeId = machine.MachineTypeId,
+            PurchaseDate = DateOnly.FromDateTime(DateTime.UtcNow)
+        };
+        
+        context.Machines.Add(newMachine);
+        await context.SaveChangesAsync();
+        
+        return CreatedAtAction(nameof(GetMachineById), new { id = newMachine.Id }, new CreateMachineResponseDto {Id =  newMachine.Id});
+    }
+    
+    private async Task<bool> IdExists<T>(int id) where T : class
+    {
+        // Cannot call e.Id - need to use EF.Property to access the property by name, because T is not known at compile time
+        // EF.Property is a function which can tell compiler that there is property "Id" on object e 
+        return await context.Set<T>().AnyAsync(e => EF.Property<int>(e, "Id") == id);
+    }
 }
+
