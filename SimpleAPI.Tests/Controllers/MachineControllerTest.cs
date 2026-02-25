@@ -18,11 +18,11 @@ public class MachineControllerTest(CustomWebApplicationFactory factory) : IClass
     [Fact]
     public async Task TestMachinesEndToEnd()
     {
-        var newMachine = MachineDto
+        var newMachine = CreateMachineDto
         {
-            
-        }
-        
+                
+        } ;
+
     }
     
     

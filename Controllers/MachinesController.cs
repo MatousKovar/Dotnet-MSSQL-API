@@ -162,10 +162,38 @@ public class MachinesController(MachineDbContext context) : ControllerBase
 
 
     [HttpGet("machine-types")]
-    public async Task<ActionResult<MachineTypeDto>> GetMachineTypes()
-    {
+    public async Task<ActionResult<List<MachineTypeDto>>> GetMachineTypes()
+    {   
+
+        var machineTypes =  await context.MachineTypes
+            .Select(mt => new MachineTypeDto
+            {
+                Id = mt.Id,
+                Name = mt.Name,
+                MaintenanceIntervalHours = mt.MaintenanceIntervalHours,
+                CreatedAt = mt.CreatedAt
+            })
+            .ToListAsync();
+
+        return Ok(machineTypes);
+    }
+    
+    [HttpGet("machine-type/{id}")]
+    public async Task<ActionResult<MachineTypeDto>> GetMachineTypes([FromRoute] int id)
+    {   
         
+        var machineType = await context.MachineTypes.FindAsync(id);
+        if (machineType == null) return NotFound($"Machine type with id {id} not found.");
+
+        var machineTypeDto = new MachineTypeDto
+        {
+            Id = machineType.Id,
+            Name = machineType.Name,
+            MaintenanceIntervalHours = machineType.MaintenanceIntervalHours,
+            CreatedAt = machineType.CreatedAt
+        };
         
+        return Ok(machineTypeDto);
     }
     
     private async Task<bool> IdExists<T>(int id) where T : class
